@@ -1,0 +1,84 @@
+---
+- name: creating new LVs
+  hosts: gen_last
+  become: true
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+ 
+  - name: creating dir /apps to mount
+    file:
+      path: /apps
+      state: directory
+      mode: "0777"
+ 
+  - name: creating lv_app
+    lvol:
+      vg: vg_sda
+      lv: lv_apps
+      size: 40G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_apps
+ 
+  - name:
+    mount:
+      path: /apps
+      src: /dev/vg_sda/lv_apps
+      fstype: xfs
+      state: mounted
+
+#-----------------------------------------------------
+
+  - name: creating dir /apps/genesys
+    file:
+      path: /apps/genesys
+      state: directory
+      mode: "0777"
+
+  - name: creating lv_genesys
+    lvol:
+      vg: vg_sda
+      lv: lv_genesys
+      size: 100G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_genesys
+
+  - name: mounting lv_genesys to /apps/genesys
+    mount:
+      path: /apps/genesys  
+      src: /dev/vg_sda/lv_genesys
+      fstype: xfs
+      state: mounted
+
+#-----------------------------------------------------
+  - name: creating dir /apps/genesys/logs
+    file:
+      path: /apps/genesys/logs
+      state: directory
+      mode: "0777"
+
+  - name: creating lv_logs
+    lvol:
+      vg: vg_sda
+      lv: lv_logs
+      size: 350G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_logs
+
+  - name: mounting lv_logs to /apps/genesys/logs
+    mount:
+      path: /apps/genesys/logs
+      src: /dev/vg_sda/lv_logs
+      fstype: xfs
+      state: mounted
+
+...

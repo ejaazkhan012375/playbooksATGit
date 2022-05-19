@@ -1,0 +1,39 @@
+---
+- name: cleaning up yum.repos.d and sharing with nodes for nfs activation
+  hosts: gen_last
+  become: yes
+  gather_facts: no
+  ignore_errors: yes
+  tasks:
+
+  - name: moving rehdat repo
+    shell: rm -f /etc/yum.repos.d/redhat.repo
+
+  - name: adding sslverify falst
+    shell: echo sslverify=false >> /etc/yum.conf
+
+  - name: copying local repos to nodes
+    copy:
+      src: /tmp/local.repo
+      dest: /etc/yum.repos.d/
+
+  - name: Installing nfs
+    yum:
+      name: nfs-utils
+      state: latest
+
+  - name: starting nfs
+    service:
+      name: nfs-server
+      state: started
+      enabled: yes
+
+  - name: Running updates on all nodes
+    shell: yum -y update
+
+  - name: copying resolv.conf to nodes
+    copy:
+      src: /etc/resolv.conf
+      dest: /etc/resolv.conf
+    
+...
