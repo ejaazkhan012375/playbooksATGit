@@ -1,0 +1,54 @@
+---
+- name: installing python 2.7.18 and java
+  hosts: cdp_mid_may
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+  - name: Installling gcc openssl-devel bzip2-devel
+    shell: yum install gcc openssl-devel bzip2-devel
+
+  - name: downloading python2
+    unarchive: 
+      src: https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz 
+      dest: /usr/src/
+      remote_src: yes      
+      validate_certs: no
+
+  - name: unarchiving python tar.gz
+    unarchive:
+      src: /usr/src/Python-2.7.18.tgz
+      dest: /usr/src/Python-2.7.18
+      remote_src: yes
+
+  - name: Running config script to install python
+    shell: ./configure --enable-optimizations --make-altinstall
+    args:
+      chdir: /usr/src/Python-2.7.18/
+      remote_src: yes
+
+#  - name: Enabling 
+#    shell:  --enable-optimizations
+
+#  - name: Making altinstall
+#    shell: make altinstall
+
+  - name: verifying 
+    shell: python --version
+
+  - name: Installing java
+    yum:
+      name: java
+      state: present
+
+  - name: Installing Postgres
+    yum:
+      name: postgresql
+      state: present
+
+  - name: adding softlink for python
+    file:
+      src: /usr/bin/python2.7 
+      dest: /usr/bin/python_link
+      state: link
+...

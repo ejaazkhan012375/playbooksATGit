@@ -1,0 +1,141 @@
+---
+- name: resizing filesystem
+  hosts: cdp_mid_may
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+
+  - name: resize / to make it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_root
+      size: 64G
+      resizefs: true
+
+  - name: resize /var to make it 128.G
+    lvol:
+      vg: vg_sda
+      lv: lv_var
+      size: 256G
+      resizefs: true
+
+  - name: resize /opt to mke it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_opt
+      size: 64G
+      resizefs: true
+
+  - name: resize /tmp to make it 48G
+    lvol:
+      vg: vg_sda
+      lv: lv_tmp
+      size: 48G
+      resizefs: true
+
+  - name: resize /opt/cloudera to make it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_opt_IBM_ITM
+      size: 64G
+      resizefs: true
+
+  - name: resize /home to make it 128G
+    lvol:
+      vg: vg_sda
+      lv: lv_local_home
+      size: 128G
+      resizefs: true
+
+  - name: Creating imperva of 30G
+    lvol:
+      vg: vg_sda
+      lv: imperva
+      size: 30G
+      resizefs: true
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/imperva
+
+  - name: Creating mount point for impera
+    shell: mkdir -p /var/opt/Anthem/imperva
+
+  - name: Mounting New LV
+    mount:
+      path: /var/opt/Anthem/imperva
+      src: /dev/vg_sda/imperva
+      fstype: xfs
+      state: mounted
+
+  - name: Changing Permissions
+    file:
+      path: /var/opt/Anthem/imperva
+      mode: 755
+
+  - name: Entry in fstab
+    shell: echo /dev/vg_sda/imperva /var/opt/Anthem/imperva xfs default 0 0 >> /etc/fstab
+
+#-----------------------------------
+
+  - name: Creating New Logical longhorn-storage
+    lvol:
+      vg: appvg
+      lv: longhorn-storage
+      size: 50%FREE
+      active: yes
+      state: present
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/appvg/longhorn-storage
+
+  - name: Remounting New LV
+    mount:
+      path: /mnt/ecs/longhorn-storage
+      src: /dev/appvg/longhorn-storage
+      fstype: xfs
+      state: mounted
+
+  - name: Changing Permissions
+    file:
+      path: /mnt/ecs/longhorn-storage
+      mode: 755
+
+  - name: Entry in fstab
+    shell: echo /dev/appvg/longhorn-storage /mnt/ecs/longhorn-storage xfs default 0 0 >> /etc/fstab
+
+  - name: Creating New Logical local-storage
+    lvol:
+      vg: appvg
+      lv: local-storage
+      size: 100%FREE
+      active: yes
+      state: present
+      force: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/appvg/local-storage
+
+  - name: Remounting New LV
+    mount:
+      path: /mnt/ecs/local-storage
+      src: /dev/appvg/local-storage
+      fstype: xfs
+      state: mounted
+
+  - name: Changing Permissions
+    file:
+      path: /mnt/ecs/local-storage
+      mode: 755
+
+  - name: Entry in fstab
+    shell: echo /dev/appvg/local-storage /mnt/ecs/local-storage xfs default 0 0 >> /etc/fstab
+
+...
+

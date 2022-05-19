@@ -1,0 +1,113 @@
+---
+- name: Removing LVs and unmounting filesystems
+  hosts: cdp_mid_may
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+
+  - name: Taking backup of FS before unmounting
+    shell: cp -r /var/history_logs /tmp/backup_var_history_logs
+
+  - name: Unmounting FS /var/history_logs
+    shell: umount /var/history_logs
+
+  - name: Removing LV
+    shell: lvremove -f /dev/mapper/vg_sda/lv_var_history_logs
+    register: lv_removed
+
+  - name: Creating New Logical Vol
+    lvol:
+      vg: vg_sda
+      lv: lv_var_history_logs
+      size: 3G
+      force: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_var_history_logs
+      
+  - name: Remounting New LV
+    mount:
+      path: /var/history_logs 
+      src: /dev/vg_sda/lv_var_history_logs
+      fstype: xfs
+      state: mounted
+      
+  - name: Changing Permissions
+    file:
+      path: /var/history_logs
+      mode: 755
+
+  - name: Changing parts to lvm
+    shell: pvcreate /dev/sdb1 /dev/sdc1 /dev/sdd1 -y
+
+  - name: Creating appvg
+    shell: vgcreate appvg /dev/sdb1 /dev/sdc1
+
+  - name: Creating mountpoints longhorn-storage
+    shell: mkdir -p /mnt/ecs/longhorn-storage
+
+  - name: Creating mountpoints local-storage
+    shell: mkdir -p /mnt/ecs/local-storage
+ 
+#  - name: Creating New Logical longhorn-storage
+#    lvol:
+#      vg: appvg
+#      lv: longhorn-storage
+#      size: 50%FREE
+#      active: yes
+#      state: present
+
+#  - name: Formatting xfs FS
+#    filesystem:
+#      fstype: xfs
+#      dev: /dev/appvg/longhorn-storage
+
+#  - name: Remounting New LV
+#    mount:
+#      path: /mnt/ecs/longhorn-storage
+#      src: /dev/appvg/longhorn-storage
+#      fstype: xfs
+#      state: mounted
+
+#  - name: Changing Permissions
+#    file:
+#      path: /mnt/ecs/longhorn-storage
+#      mode: 1755
+  
+#  - name: Entry in fstab
+#    shell: echo /dev/appvg/longhorn-storage /mnt/ecs/longhorn-storage xfs default 0 0 >> /etc/fstab
+
+#  - name: Creating New Logical local-storage
+#    lvol:
+#      vg: appvg
+#      lv: local-storage
+#      size: 100%FREE
+#      active: yes
+#      state: present
+#      force: yes
+
+#  - name: Formatting xfs FS
+#    filesystem:
+#      fstype: xfs
+#      dev: /dev/appvg/local-storage
+
+#  - name: Remounting New LV
+#    mount:
+#      path: /mnt/ecs/local-storage
+#      src: /dev/appvg/local-storage
+#      fstype: xfs
+#      state: mounted
+
+#  - name: Changing Permissions
+#    file:
+#      path: /mnt/ecs/local-storage
+#      mode: 1755
+
+#  - name: Entry in fstab
+#    shell: echo /dev/appvg/local-storage /mnt/ecs/local-storage xfs default 0 0 >> /etc/fstab
+
+...
+
