@@ -1,0 +1,1098 @@
+- name: This playbook will replace out script for deployment
+  hosts: poc
+  gather_facts: yes
+  become: yes
+  ignore_errors: yes
+  vars:
+    nfs: /mnt/post_install/new_build/
+
+  tasks:
+  - name: STEP-0A Backing up /etc/resolv file
+    copy: 
+      src: /etc/resolv.conf
+      dest: /etc/resolv.conf_orig
+    tags: step-0
+
+  - name: STEP-0B Copying Resolv file
+    copy:
+      src: /mnt/post_install/new_build/resolv.conf
+      dest: /etc/resolv.conf
+    tags: step-0
+
+  - name: STEP-1A Taking Backup of sshd_config file
+    copy:
+      src: /etc/ssh/sshd_config
+      dest: /etc/ssh/sshd_config_orig
+    tags: step-1
+
+  - name: STEP-1B Change SSHD Permission
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: present
+      line: "{{ item }}"
+    with_items:
+      - 'DenyUsers wsadmin'
+      - 'DenyGroups sshdeny'
+    tags: step-1
+
+  - name: STEP-1C Updating sshd config
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp:
+        - #MaxAuthTries6
+        - #Protocol\2
+        - #PermitRootLogin yes
+        - #MaxStartups 10
+        - AcceptEnv
+        - #PrintMotd
+      replace:
+        - #MaxAuthTries5
+        - Protocol\2
+        - PermitRootLogin no
+        - MaxStartups 100
+        - #AcceptEnv
+        - PrintMotd
+    tags: step-1
+
+  - name: STEP-2A Backing up defs file
+    copy: 
+      src: /etc/login.defs
+      dest: /etc/login.defs_orig
+    tags: step-2
+
+  - name: STEP-2B Updating login.defs
+    shell: sed -i -e 's/99999/45/g' -e 's/PASS_MIN_LEN\t5/PASS_MIN_LEN\t8/g' -e 's/PASS_MIN_DAYS\t0/PASS_MIN_DAYS\t7/' /etc/login.defs
+    tags: step-2
+
+  - name: STEP-3A Backing up pam.d file
+    copy: 
+      src: /etc/pam.d
+      dest: /etc/pam.d_orig
+    tags: step-3
+
+  - name: STEP-3B Updating pam.d 
+    shell: sed -i -e /pam_selinux.so open/ i\session  optional pam_lastlog.so /etc/pam.d/login
+    tags: step-3
+
+  - name: STEP-4A Copying ntpd file
+    copy: 
+      src: /etc/sysconfig/ntpd
+      dest: /etc/sysconfig/ntpd_orig
+    tags: step-4
+
+  - name: STEP-4B Updating ntpd
+    shell: sed -i -e 's/no/yes/g' /etc/sysconfig/ntpd
+    tags: step-4
+
+  - name: STEP-5A Copying hosts file
+    copy:
+      src: /etc/hosts
+      dest: /etc/hosts_orig
+    tags: step-5
+
+  - name: STEP-5B Copying hosts file
+    copy:
+      src: /mnt/post_install/new_build/hosts.tmp
+      dest: /etc/hosts
+#      remote_src: yes
+    tags: step-5
+
+  - name: STEP-5C Getting IP to /etc/hosts
+    shell: ifconfig -a |grep -w inet |egrep -v '127.0.0.1|169.|192.'|awk '{print $2}'|tr -d '  Bcast' >> /etc/hosts
+    register: ip_address
+    tags: step-5
+
+  - name: STEP-5D Getting hostname to /etc/hosts
+    shell: hostname | awk -F. '{print $1}' >> /etc/hosts
+    register: hostname
+    tags: step-5
+
+#  - name: STEP-5E redirecting results to /etc/hosts
+#    lineinfile:
+#      path: /etc/hosts
+#      line: "{{ mgs=ip_address.stdout_lines }};{{ msg=hostname.stdout_lines }};{{ msg=hostname.stdout_lines }}.wellpoint.com"
+#      insertafter: EOF
+#    tags: step-5
+
+  - name: STEP-6 Disabeling ctrl-alt-delete
+    shell: /bin/systemctl mask ctrl-alt-del.target
+    tags: step-6
+
+  - name: STEP-7A Copying logrotate
+    copy: 
+      src: /etc/logrotate.conf
+      dest: /etc/logrotate.conf_orig
+    tags: step-7
+
+  - name: STEP-7B Updating logrotate
+    shell: sed -i -e '6,10s/rotate 4/rotate 13/' -e 's/rotate 1$/rotate 4/g' /etc/logrotate.conf
+    tags: step-7
+
+  - name: STEP-8A Copying useradd
+    copy:
+      src: /etc/default/useradd
+      dest: /etc/default/useradd_orig
+    tags: step-8
+
+  - name: STEP-8B Updating useradd
+    shell: sed 's/\/home/\/local_home/g' /etc/default/useradd
+    tags: step-8
+
+  - name: STEP-9A Copying /etc/fstab
+    copy:
+      src: /etc/fstab
+      dest: /etc/fstab_orig
+    tags: step-9
+
+  - name: STEP-9B Creating local_home
+    file:
+      path: /local_home
+      state: directory
+    tags: step-9
+
+  - name: STEP-9D Unmounting /home
+    mount:
+      path: /home
+      state: unmounted
+    tags: step-9
+
+  - name: STEP-9E Mounting /local_home
+    mount:
+      src: /dev/mapper/rootvg-local_home
+      path: /local_home
+      fstype: xfs
+      state: mounted
+    tags: step-9
+
+  - name: STEP-9F Updating fstab
+    shell: sed -i -e 's/ \/home/ \/local_home/g' /etc/fstab
+    tags: step-9
+
+  - name: STEP-10A1 Copying /root/bashrc
+    copy:
+      src: /root/.bashrc
+      dest: /root/.bashrc_orig
+    tags: step-10
+
+  - name: STEP-10A2 Updating root bashrc
+    shell: echo umask 027 >> /root/.bashrc
+    tags: step-10
+
+  - name: STEP-10B1 Copying /etc/bashrc
+    copy:
+      src: /etc/bashrc
+      dest: /etc/bashrc_orig
+    tags: step-10
+
+  - name: STEP-10B2 Updating etc bashrc
+    shell: cat /mnt/post_install/new_build/umaskbashrc.txt >> /etc/bashrc
+    tags: step-10
+
+  - name: STEP-10C1 Copying /etc/profile
+    copy:
+      src: /etc/profile
+      dest: /etc/profile_orig
+    tags: step-10
+
+  - name: STEP-10C2 Updating etc profile
+    shell: cat /mnt/post_install/new_build/umaskprofile.txt /mnt/post_install/new_build/secondary_logging.txt >> /etc/profile
+    tags: step-10
+
+  - name: Updating etc profile
+    shell: sed 's/ulimit -S/#ulimit -S/g' /etc/profile
+    tags: step-10
+
+  - name: STEP-10C3 Updating etc profile
+    shell: cat /mnt/post_install/new_build/secondary_logging.txt >> /etc/profile
+    tags: step-10
+
+  - name: STEP-11A chaging permission on /var/spool
+    shell: chmod 1777 /var/spool
+    tags: step-11
+
+  - name: STEP-11B chaging permission on /var/log
+    shell: chmod 750 /var/log
+    tags: step-11
+
+  - name: STEP-11C chaging permission on /root
+    shell: chmod 700 /root
+    tags: step-11
+
+  - name: STEP-11D chaging permission on /etc/security
+    shell: chmod 700 /etc/security
+    tags: step-11
+
+  - name: STEP-11E chaging permission on /etc/default
+    shell: chmod 700 /etc/default
+    tags: step-11
+
+  - name: STEP-11F adding root to ftpusers
+    shell: echo root >> /etc/ftpusers
+    tags: step-11
+
+  - name: STEP-11G adding root to /etc/cron.allow
+    shell: echo root >> /etc/cron.allow
+    tags: step-11
+
+  - name: STEP-11H adding Oracle to /etc/cron.allow
+    shell: echo #oracle >> /etc/cron.allow
+    tags: step-11
+
+  - name: STEP-11J adding root to at.allow
+    shell: echo root >> /etc/at.allow
+    tags: step-11
+
+  - name: STEP-11K Copying /etc/securetty
+    copy:
+      src: /etc/securetty
+      dest: /etc/securetty_orig
+    tags: step-11
+
+  - name: STEP-11L Copying /etc/securetty
+    copy:
+      src: /mnt/post_install/new_build/securetty
+      dest: /etc/securetty
+    tags: step-11
+
+  - name: STEP-12A Copying /etc/pam.d/system-auth
+    copy:
+      src: /etc/pam.d/system-auth
+      dest: /etc/pam.d/system-auth_orig
+    tags: step-12
+
+  - name: STEP-12 Checking OS Release
+    shell: cat /etc/redhat-release
+    register: os_family
+
+  - name: STEP-12B Copying /etc/pam.d/system-auth
+    shell: cat /mnt/post_install/new_build/system-auth7 > /etc/pam.d/system-auth
+    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == "7"
+    tags: step-12
+
+  - name: STEP-12C Copying /etc/pam.d/password-auth
+    shell: cat /mnt/post-install/new_build/password-auth8 > /etc/pam.d/password-auth
+    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == "8"   
+    tags: step-12
+
+  - name: STEP-13A Removing old repo
+    shell: rm -f /etc/yum.repos.d/*
+    tags: step-13
+
+  - name: STEP-13B Adding sslverify=false to yum.conf
+    shell: echo sslverify=false >> /etc/yum.conf
+    tags: step-13
+
+  - name: STEP-13C Adding new local repo
+    copy:
+      src: /mnt/post_install/new_build/rhel8build.repo
+      dest: /etc/yum.repos.d/rhel8build.repo
+    tags: step-13
+
+  - name: STEP-13D Installing packages ---- NEED DISCUSSION
+    yum:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - net-tools
+      - libstdc++.so.5
+      - ksh
+      - ntp
+      - bc
+      - unzip
+      - nc
+      - perl-5*
+      - mksh
+    tags: step-13
+
+  - name: STEP-13E Running updates
+    shell: yum -y update
+    tags: step-13
+
+  - name: STEP-14 Checking vg
+    shell: vgs | grep -i vg
+    register: vg_name
+    tags: step-14
+
+  - name: STEP-14A Creating lv history_logs on vg_sda
+    lvol:
+      vg: vg_sda
+      lv: history_logs
+      size: 2G
+      force: true
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-14B filesystem on history_logs
+    filesystem:
+      fstype: xfs
+      dev: /dev/mapper/vg_sda/history_logs
+      resizefs: yes
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-14C Creating mountpoint
+    file:
+      path: /var/history_logs
+      state: directory
+      mode: '1777'
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-14D Mounting history_logs
+    mount:
+      path: /var/history_logs
+      src: /dev/mapper/vg_sda-history_logs
+      fstype: xfs
+      state: mounted
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-14E Copying /etc/fstab
+    copy:
+      src: /etc/fstab
+      dest: /etc/fstab_orig
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-14E Adding mount in fstab
+    shell: echo /dev/mappper/vg_sda/history_logs /var/history_logs xfs defaults 1 2 >> /etc/fstab
+    when: vg_name == "vg_sda"
+    tags: step-14
+
+  - name: STEP-15A Copying /etc/sudoers
+    copy:
+      src: /etc/sudoers
+      dest: /etc/sudoers_orig
+    tags: step-15
+
+  - name: STEP-15B Copying /etc/sudoers
+    copy:
+      src: /mnt/post_install/new_build/sudoers.current/sudoers.rhel.current 
+      dest: /etc/sudoers
+    tags: step-15
+
+  - name: STEP-15C Copying /etc/sudoers
+    copy:
+      src: /mnt/post_install/new_build/sudoers.current/sudoers.d/*
+      dest: /etc/sudoers.d/
+      remote_src: yes
+    tags: step-15
+
+  - name: STEP-15D changing permissions on sudoers.d
+    shell: chmod 440 /etc/sudoers.d/*
+    tags: step-15
+
+  - name: STEP-15E changing Ownership on sudoers.d
+    shell: chown -R root:root /etc/sudoers.d
+    tags: step-15
+
+  - name: STEP-16A copy text from /etc/motd to motd and issue
+    shell: cat /mnt/post_install/new_build/motd > /etc/motd
+    tags: step-16
+
+  - name: STEP-16B copy text from /etc/motd to motd and issue
+    shell: cat /mnt/post_install/new_build/motd > /etc/issue
+    tags: step-16
+
+#  - name: STEP-17A NEED DISCUSSION - AS PER DISCUSSION WITH JASON, WE DONT NEED THIS ANYMORE..
+
+  - name: STEP18 Installing chronyd
+    yum:
+      name: chrony
+      state: latest
+    tags: step-18
+
+  - name: STEP-18A Copying /etc/chrony.conf
+    copy:
+      src: /etc/chrony.conf
+      dest: /etc/chrony.conf_orig
+    tags: step-18
+
+  - name: STEP-18B Copying /etc/chrony.conf
+    copy:
+      src: /mnt/post_install/new_build/chrony.conf
+      dest: /etc/chrony.conf
+    tags: step-18
+
+  - name: STEP-18C starting chronyd
+    service:
+      name: chronyd
+      state: started
+      enabled: true
+    tags: step-18
+
+#  - name: STEP-19A instaling tivoli - NEED DISCUSSION -- WHOLE TASK IS COMMENTED OUT ON SCRIPT
+ 
+  - name: STEP-20A Installing TSM Client with NFS script
+    script: /mnt/post_install/new_build/install-tsm.sh
+    tags: step-20
+
+#  - name: STEP-21A SRM - Creating srmcoll group -- THIS WHOLE TASK IS COMMENTED OUT ON SCRIPT
+#    group:
+#      name: srmcoll
+#      state: present
+#    tags: step-21
+      
+#  - name: STEP-21B Creating /var/adm dir
+#    file:
+#      path: /var/adm
+#      state: directory
+#    tags: step-21
+  
+#  - name: STEP-21C Adding user srmcoll to srmdata
+#    shell: useradd -g srmcoll -c "897/I/669765//Barry Buchek" -m -d /var/adm/perfmgr srmdata
+  - name: STEP-22 Installing bind-utils
+    yum:
+      name: bind-utils
+      state: latest
+    tags: step-22
+
+  - name: STEP-22 Installing lsof
+    yum: 
+      name: lsof
+      state: latest
+    tags: step-22
+
+  - name: STEP-22 Installing system-store-manager
+    yum:
+      name: system-storage-manager
+      state: latest
+    tags: step-22
+  
+  - name: STEP-22A Stopping fiewalld
+    service:
+      name: firewalld
+      state: stopped
+      enabled: false
+    tags: step-22
+   
+  - name: STEP-22C Masking firewalld
+    shell: systemctl mask firewalld
+    tags: step-22
+
+  - name: STEP-22D Masking iptables
+    shell: systemctl mask iptables
+    tags: step-22
+
+  - name: STEP-22E copying /etc/resolv.conf from mnt
+    copy:
+      src: /mnt/post_install/new_build/resolv.conf
+      dest: /etc/resolv.conf
+    tags: step-22
+
+  - name: STEP-23A Setting up IBM userid - NEED DISCUSSION
+    shell: change -M 45 avahi_autoipd;change -M 45 uidadmin
+    tags: step-23
+
+  - name: STEP-23B Running allid-usonly.sh
+    script: /mnt/post_install/new_build/allid.sh
+    tags: step-23
+
+#  - name: STEP-24A Installing Tonic ---- THIS WHOLE TASK IS COMMENTED OUT IN SCRIPT
+#    shell: rpm -i /mnt/post_install/new_build/Tonic-1.09-1.noarch.rpm
+#    tags: step-24
+
+#  - name: STEP-25A rsyslog config
+#    copy: 
+#      src: /etc/syslog.conf
+#      dest: /etc/syslog.conf_orig
+#    tags: step-25
+
+#  - name: STEP-25B Commenting out syslog.conf file updates - NEED DISCUSSION
+#    shell: sed -e #/\*.info\;mail/ i\ #*.info;mail.none;authpriv.none;cron.none  @in02plviif001.wellpoint.com' \ ##-e ' ##/authpriv\.\*/ i\ ##authpriv.* @in02plviif001.wellpoint.com' \##-e '##/cron\.\*/ i\ ##cron.* @in02plviif001.wellpoint.com' \#
+#    tags: step-25
+   
+#  - name: STEP-25C Reading and Redirecting syslog.conf data
+#    shell: cat /etc/syslog.conf > /etc/syslog.conf
+#    tags: step-25
+
+#  - name: STEP-25D Reloading syslog
+#    service:
+#      name: syslog
+#      state: reloaded
+#    tags: step-25
+
+  - name: STEP-25E copying rsyslog.conf
+    copy: 
+      src: /etc/rsyslog.conf
+      dest: /etc/rsyslog.conf_orig
+    tags: step-25
+
+  - name: STEP-25F Bringing new rsyslog from NFS
+    copy:
+      src: /mnt/post_install/new_build/rsyslog.conf
+      dest: /etc/rsyslog.conf
+    tags: step-25
+
+  - name: STEP-25G Restarting rsyslog
+    service:
+      name: rsyslog
+      state: restarted
+    tags: step-25
+
+  - name: STEP-26A Grepping TMOUT settings in /root/bash_profile
+    shell: grep -E TMOUT /root/.bash_profile | wc -l
+    register: tmout_root_bash_profile
+    tags: step-26
+
+  - name: STEP-26B Echo new value when current TMOUT is 0 in /root/bash_profile
+    shell: echo TMOUT=21600 >> /root/.bash_profile
+    when: tmout_root_bash_profile == "0"
+    tags: step-26
+
+  - name: STEP-26C Grepping tmout settings in /etc/profile
+    shell: grep -E TMOUT /etc/profile | wc -l
+    register: tmout_etc_profile
+    tags: step-26
+
+  - name: STEP-26D Echo new value when current TMOUT is 0 in /etc/profile
+    shell: echo TMOUT=1800 >> /etc/profile
+    when: tmout_etc_profile == "0"
+    tags: step-26
+
+#  - name: STEP-27A Killing active processes
+#    shell: pkil vsacommd;pkill vsaoutd;pkill vsaclientd
+#    tags: step-27
+
+#  - name: STEP-27B Removing IBM-Fusion if exists
+#    shell: rm -rf /opt/IBM/fusion/*
+#    tags: step-27
+
+#  - name: STEP-27C Creating new files
+#    file:
+#      path: /opt/IBM/fusion
+#      state: directory
+#      mode: 755
+#    tags: step-27
+
+#  - name: STEP-27D copying config files
+#    copy:
+#      src: /mnt/post_install/new_build/vsaclient-Linux/*
+#      dest: /opt/IBM/fusion/.
+#    tags: step-27
+ 
+#  - name: STEP-27E starting vsaclient 
+#    service:
+#      name: vsaclient
+#      state: started
+#    tags: step-27
+
+#  - name: STEP-28A Bladelogic - NOT REQUIRED - NEED DISCUSSION
+#    script: /mnt/post_install/new_build/NSH750-264-RHAS4X86_64.SH
+#    tags: step-28
+
+#  - name: STEP-28B Starting rscd
+#    service:
+#      name: rscd
+#      state: started
+#    tags: step-28
+
+  - name: STEP-29A Running script to add IDs
+    script: /mnt/post_install/new_build/aocid.sh
+    tags: step-29
+
+  - name: STEP-29B NEED DISCUSSION
+    shell: cd user;./syncpw-aocteam.sh; grep -i src /etc/shadow
+    tags: step-29
+
+#  - name: STEP-30A SKIPPED - COMMENTED OUT ON SCRIPT
+    #TAD4D replease with Flexera
+
+  - name: STEP-31A Setting up Crobtab - NEED DISCUSSION - see word file point 31
+    file:
+      path: /var/spool/cron/root
+      state: touch
+    tags: step-31
+
+  - name: STEP-31B 
+    shell: /bin/crontab -u root -l > /tmp/rootcrontab
+    tags: step-31
+
+  - name: STEP-32A Copying /etc/multipath.conf
+    copy:
+      src: /etc/multipath.conf
+      dest: /etc/multipath.conf_orig
+      remote_src: yes
+    tags: step-32
+
+#  - name: STEP-32B Check RHEL
+#    shell: cat /etc/redhat-release | grep -i "Red Hat Enterprise Linux release  . "
+#    register: distribution
+#    tags: step-32
+
+#  - name: STEP-32B Check RHEL
+#    shell: cat /etc/redhat-release
+#    register: version
+#    tags: step-32
+
+#  - name: STEP-32C Debug rehl_release
+#    debug:
+#      msg: var=distribution.stdout
+#    tags: step-32
+
+#  - name: STEP-32C Debug rehl_release
+#    debug:
+#      msg: var=version.stdout
+#    tags: step-32
+
+  - name: STEP-32D Copying multipath.6 from NFS
+    shell: cat /mnt/post_install/new_build/multipath.conf.6 > /etc/multipath.conf
+    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "6"
+    tags: step-32
+
+  - name: STEP-32D Copying multipath from NFS
+    shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
+    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "7"
+    tags: step-32
+
+  - name: STEP-32D Copying multipath from NFS
+    shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
+    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "8"
+    tags: step-32
+
+#    copy:
+#      src: /mnt/post_install/new_build/multipath.conf.6
+#      dest: /etc/multipath.conf
+#      remote_src: yes
+#    when: rhel_release.stdout_lines == "Red Hat Enterprise Linux release 6.*"
+#    tags: step-32
+
+#  - name: STEP-32D Copying multipath from NFS
+#    copy:
+#      src: /mnt/post_install/new_build/multipath.conf
+#      dest: /etc/multipath.conf
+#     remote_src: yes
+#    when: rhel_release.stdout_lines == "Red Hat Enterprise Linux release 7.*"
+#    tags: step-32
+
+#  - name: STEP-32D Copying multipath from NFS
+#    copy:
+#      src: /mnt/post_install/new_build/multipath.conf
+#      dest: /etc/multipath.conf
+#      remote_src: yes
+#    when: rhel_release.stdout_lines == "Red Hat Enterprise Linux release 8.*"
+#    tags: step-32
+
+  - name: STEP-32F Start multipathd
+    service:
+      name: multipathd
+      state: restarted
+      enabled: yes
+    tags: step-32 
+
+  - name: STEP-33A Creating opt/admin dir
+    file:
+      path: /opt/admin
+      state: directory
+    tags: step-33
+      
+#  - name: STEP-33B Copying gep.ksh and copy sudo.sh
+#    copy:
+#      src: /mnt/post_install/new_build/toolschk.sh
+#      dest: /opt/admin/.
+#    tags: step-33
+
+#  - name: STEP-33C Copying gep.ksh and copy sudo.sh
+#    copy:
+#      src: /mnt/post_install/new_build/gep.ksh
+#      dest: /opt/admin/.
+#    tags: step-33
+
+  - name: STEP-33D Copying gep.ksh and copy sudo.sh
+    copy:
+      src: /mnt/post_install/new_build/sudo_copy.sh
+      dest: /opt/admin/.
+      mode: 775
+    tags: step-33
+
+  - name: STEP-33E Changing Ownership on opt/sudo_copy.sh
+    shell: chown -R satuser:unixadm /opt/admin/sudo_copy.sh
+    tags: step-33
+
+  - name: STEP-34 Check VG
+    shell: vgs | grep -i vg
+    register: vg_name
+    tags: step-34
+
+  - name: Printing
+    debug:
+      msg: var=vg_name
+    tags: step-34
+
+  - name: STEP-34A Creating lv venafi on vg_sda
+    lvol:
+      vg: vg_sda
+      lv: venafi
+      size: 1G
+      force: true
+    when: vg_name == "vg_sda"
+    tags: step-34
+
+  - name: STEP-34B filesystem on venafi
+    filesystem:
+      fstype: xfs
+      dev: /dev/mapper/vg_sda/venafi
+      force: yes
+      resizefs: yes
+    when: vg_name == "vg_sda"
+    tags: step-34
+
+  - name: STEP-34C Creating mountpoint
+    file:
+      path: /venafi
+      state: directory
+      mode: 755
+    when: vg_name == "vg_sda"
+    tags: step-34
+
+  - name: STEP-34D Mounting Venafi LVM
+    mount:
+      path: /venafi
+      src: /dev/mapper/vg_sda/venafi
+      fstype: xfs
+      state: mounted
+    when: vg_name == "vg_sda"
+    tags: step-34
+
+  - name: STEP-34E Adding mount in fstab
+    shell: echo /dev/mappper/vg_sda/venafi /venafi xfs defaults 0 0 >> /etc/fstab
+    when: vg_name == "vg_sda"
+    tags: step-34
+
+  - name: STEP-35A Copying Qradar package 
+    copy:
+      src: /mnt/post_install/new_build/Qradar2021/qrd73000_us_0.csplin.install_iplno_Anthem_va10p30207_2021-09-10.tar
+      dest: /
+    tags: step-35
+
+  - name: STEP-35B Extracting package for qradar in /
+    shell: tar -xvf /qrd73000_us_0.csplin.install_iplno_Anthem_va10p30207_2021-09-10.tar /
+    tags: step-35
+
+  - name: STEP-35C Running script sdwork
+    shell: ./esd/sdwork/qrd73000_standalone.sh
+#    args:
+#     chdir: /esd/sdwork/
+    tags: step-35
+
+  - name: STEP-36A changing permission on fs
+    shell: find / \( -fstype ext3 -o -fstype ext4 -o -fstype xfs \) \( -type d -o -type f \) -perm -002 -ls  -exec chmod 755 {} \;
+    tags: step-36
+
+  - name: STEP-36B updating permissiong on /tmp
+    file:
+      path: /tmp
+      mode: 1777
+    tags: step-36
+
+  - name: STEP-36C updating permissiong on /etc/security
+    file:
+      path: /etc/security
+      mode: 700
+    tags: step-36
+
+  - name: STEP-36D updating permissiong on /etc/default
+    file:
+      path: /etc/default
+      mode: 700
+    tags: step-36
+
+  - name: STEP-36E updating permissiong on /var/history_logs
+    file:
+      path: /var/history_logs
+      mode: 700
+    tags: step-36
+
+  - name: STEP-36F updating permissiong on /var/tmp
+    file:
+      path: /var/tmp
+      mode: 1777
+    tags: step-36
+
+  - name: STEP-36G Running EDP script
+    script: /mnt/post_install/new_build/EP2/EP2_Driver_V2.0.8.sh
+#    remote_src: yes
+    tags: step-36
+
+  - name: STEP-36H Creating /pub dir
+    file:
+      state: directory
+      path: /pub
+    tags: step-36
+
+  - name: STEP-36I Mounting 
+    mount:
+      fstype: nfs
+      src: 30.128.116.40:/pub
+      path: /pub
+      state: mounted
+    tags: step-36
+
+  - name: STEP-36J Creating HOSTNAME
+    file:
+      path: /pub/EP2Scan_results/HOSTNAME
+      state: directory
+    tags: step-36
+  
+  - name: STEP-36K Copying files to Hostname
+    copy:
+      src: /tmp/EP2_Driver_V2.0.8.sh.files
+      dest: /pub/EP2Scan_results/HOSTNAME/
+    tags: step-36
+
+  - name: STEP-36L Unmounting /pub
+    shell: umount /pub
+    tags: step-36
+
+  - name: STEP-37A Yum upate all
+    shell: yum -y update
+    tags: step-37
+
+  - name: STEP-37B removing nano
+    yum:
+      name: nano
+      state: absent
+    tags: step-38
+
+  - name: STEP-37C Installing Mutt
+    shell: yum -y install mutt
+    tags: step-37
+
+  - name: STEP-37D Move /etc/muttrc
+    command:
+      argv:
+        - mv /etc/Muttrc /etc/Muttrc_orig
+        - cp /mnt/post_install/new_build/Muttrc /etc/Muttrc
+    tags: step-37
+
+  - name: STEP-38A TPC SRA Agent
+    command: /mnt/post_install/new_build/LINUX_SRA/linux_ix86/bin/Agent -install -force -serverPort 9549 -serverIp 30.132.129.73  -installLoc "/opt/IBM/TPC" -agentPort 49101 -commType daemon
+    tags: step-38
+
+  - name: STEP-39A Tanium Install
+    script: /mnt/post_install/new_build/tanium/install-tanium.sh
+#    remote_src: yes
+    tags: step-39
+
+  - name: STEP-39B Start Tanium
+    service:
+      name: tanium
+      state: started
+    tags: step-39
+
+  - name: STEP-40A Install Flexra
+    script: /mnt/post_install/new_build/Flexera/flexera.sh
+    tags: step-40
+
+  - name: STEP-41A TCS Compliance steps
+    command:
+      argv:
+        - echo TMOUT=1800 >> /etc/profile
+        - echo readonly TMOUT >> /etc/profile
+        - echo export TMOUT >> /etc/profile
+    tags: step-41
+
+  - name: STEP-41B Copy SecurityPwQauality.conf
+    copy:
+      src: /etc/security/pwquality.conf
+      dest: /etc/security/pwquality.conf_orig
+    tags: step-41
+
+  - name: STEP-41C Copy NEW pwquality.conf
+    copy:
+      src: /mnt/post_install/new_build/pwquality.conf
+      dest: /etc/security/pwquality.conf
+    tags: step-41
+
+  - name: STEP-41C Copy pam.d
+    copy:
+      src: /etc/pam.d/su
+      dest: /etc/pam.d/su_orig
+    tags: step-41
+
+  - name: STEP-41D Config Pam.d/su
+    command: "{{ item }}"
+    with_items:
+        - sed -i '/required/s/^#//g' /etc/pam.d/su
+        - sed -i '/sufficient\tpam_wheel/s/^/#/g' /etc/pam.d/su
+        - sed -i 's/pam_wheel.so use_uid$/pam_wheel.so use_uid root_only/g' /etc/pam.d/su
+        - sed -e '/^#/! {/pam_pwquality/ s/^/#/}' -i /etc/pam.d/passwd
+    tags: step-41
+
+  - name: STEP-42A Install Splunk Forwarder
+    unarchive:
+      src: /mnt/post_install/new_build/splunk/splunkforwarder-6.4.4-b53a5c14bb5e-Linux-x86_64.tar.gz
+      dest: /opt/
+      remote_src: yes
+    tags: step-42
+    
+  - name: STEP-42B Accepting License
+    shell: /opt/splunkforwarder/bin/splunk start --accept-license 
+    tags: step-42
+
+  - name: STEP-42C Editing User Passwrd and role
+    shell: /opt/splunkforwarder/bin/splunk edit user admin -password temporary -roles admin -auth admin:changeme
+    tags: step-42
+
+  - name: STEP-42D Starting and Enabling Splunk
+    service: 
+      name: splunk
+      state: started
+      enabled: yes
+    tags: step-42
+
+  - name: STEP-43 Check VG
+    shell: vgs | grep -i vg
+    register: vg_name
+    tags: step-43
+
+  - name: STEP-43A - Creating itm_lv
+    lvol:
+      vg: vg_sda
+      lv: itm_lv
+      size: 3G
+      resizefs: true
+      force: true
+    when: vg_name == "vg_sda"
+    tags: step-43
+
+  - name: STEP-43B filesystem on itm_lv
+    filesystem:
+      fstype: xfs
+      dev: /dev/mapper/vg_sda-itm_lv
+      resizefs: yes
+    when: vg_name == "vg_sda"
+    tags: step-43
+
+  - name: STEP-43C Creating mountpoint
+    file:
+      path: /opt/IBM/ITM
+      state: directory
+      mode: '1777'
+    when: vg_name == "vg_sda"
+    tags: step-43
+
+  - name: STEP-43C Mounting itm_lv
+    mount:
+      path: /opt/IBM/ITM
+      src: /dev/mapper/vg_sda-itm_lv
+      fstype: xfs
+      state: mounted
+    when: vg_name == "vg_sda"
+    tags: step-43
+
+  - name: STEP-43D Entry in /etc/fstab
+    lineinfile:
+      path: /etc/fstab
+      line: /dev/vg_sda/itm_lv /opt/IBM/ITM  xfs  defaults 1 2
+      insert_before: EOF
+    when: vg_name == "vg_sda"
+    tags: step-43
+  
+  - name: STEP-43E mounting all
+    shell: mount -a
+    when: vg_name == "vg_sda"
+    tags: step-43
+
+#  - name: STEP-43F Installing ITM ----------------NEED DISCUSSION
+  - name: STEP-43F Checking Environment
+    shell: hostname | cut -5
+    register: env
+    tags: step-43f
+
+  - name: STEP-43 Printing env
+    debug: var=env
+    tags: step-43f
+
+  - name: STEP-43 Installing ITM on prod
+    shell: ./itmInstall.ksh -f /mnt/post_install/new_build/lx8266/itm_install_ITMP1_prod.txt
+    when: env == "p"
+    tags: step-43f
+
+  - name: STEP-43 Installing ITM on non prod
+    script: ./itmInstall.ksh -f /mnt/post_install/new_build/lx8266/itm_install_ITMP1_nonprod.txt
+    when: (env == "d") or (env == "t") or (env == "n")
+    tags: step-43f
+
+  - name: STEP-44A Installing BESClient
+    script: /mnt/post_install/new_build/BES/teminstall
+    tags: step-44
+
+  - name: STEP-45 Installing Centrify Packages
+    script: /mnt/post_install/new_build/centrify/CURRENT-BUNDLE/linuxceninstallv2021.sh
+    tags: step-45
+
+  - name: STEP-46 Installing dnsmasq
+    script: /mnt/post_install/new_build/dnsmasq/install-dnsmasq-rh8.sh
+    tags: step-46
+
+  - name: STEP-47 Installing Ilumio
+    script: /mnt/post_install/new_build/install-illumio.sh
+    tags: step-47
+
+  - name: STEP-48 Tuning Setting
+    script: /mnt/post_install/new_build/Redhat_linux_May2021v2.sh
+    tags: step-48
+    
+  - name: STEP-49 Removing Khaja id
+    shell: userdel -r khaja
+    tags: step-49
+  
+  - name: STEP-50 Installing Qualys Agent
+    script: /mnt/post_install/new_build/Qualys/install-qualys-agent.sh
+    tags: step-50
+
+# TABLE OF CONTENT FOR TAGS:
+#===================================================================
+# step-0: resolv.conf
+# step-1: sshd
+# step-2: login.defs
+# step-3: pam.d
+# step-4: ntpd
+# step-5: hosts
+# step-6: umask_ctrl_del
+# step-7: logrotate
+# step-8: useradd_to_local_home
+# step-9: change_home_to_local_home
+# step-10: umask_secondary_logging
+# step-11: security_settings
+# step-12: system_auth_passwd_auto
+# step-13: cp_build_repo_install_packages_and_yumudpate
+# step-14: history_log_fs_and_lvm_config
+# step-15: sudoers_settings
+# step-16: motd_config
+# step-17: satellite_registeration
+# step-18: chrony_config
+# step-19: lcfd----------------------------------NEED DISCUSSION
+# step-20: tsm_client
+# step-21: srm_config
+# step-22: install_bind_utils
+# step-23: IBM_userids
+# step-24: tonic
+# step-25: rsyslog.conf
+# step-26: TMOUT_settting
+# step-27: fusion
+# step-28: bladelogic
+# step-29: AOC_userids
+# step-30: TAD40
+# step-31: crontab
+# step-32: multipath.conf
+# step-33: opt_admin_script
+# step-34: vanafi_fs
+# step-35: Qradar
+# step-36: EP2_scan
+# step-37: Muttrc
+# step-38: TPC SRA Agent 
+# step-39: Tanium
+# step-40: Flexera
+# step-41: TCS Compliance Steps
+# step-42: Splunk Forwarder
+# step-43: ITM
+# step-44: BES
+# step-45: Centrify
+# step-46: DNSMasq
+# step-47: Ilumio
+# step-48: Tunning Setting
+# step-49: Removing Khaja Id
+# step-50: Installing Qualys Agent
+
