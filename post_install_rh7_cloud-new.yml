@@ -1,6 +1,5 @@
 - name: This playbook will replace out script for deployment
-  hosts: poc
-  gather_facts: yes
+  hosts: poc  
   become: yes
   ignore_errors: yes
   vars:
@@ -11,6 +10,7 @@
     copy: 
       src: /etc/resolv.conf
       dest: /etc/resolv.conf_orig
+      remote_src: yes
     tags: step-0
 
   - name: STEP-0B Copying Resolv file
@@ -39,19 +39,19 @@
     replace:
       path: /etc/ssh/sshd_config
       regexp:
-        - #MaxAuthTries6
-        - #Protocol\2
-        - #PermitRootLogin yes
-        - #MaxStartups 10
-        - AcceptEnv
-        - #PrintMotd
+        - '#MaxAuthTries6'
+        - '#Protocol\2'
+        - '#PermitRootLogin yes'
+        - '#MaxStartups 1000'
+        - 'AcceptEnv'
+        - '#PrintMotd'
       replace:
-        - #MaxAuthTries5
-        - Protocol\2
-        - PermitRootLogin no
-        - MaxStartups 100
-        - #AcceptEnv
-        - PrintMotd
+        - '#MaxAuthTries5'
+        - 'Protocol\2'
+        - 'PermitRootLogin no'
+        - 'MaxStartups 100'
+        - '#AcceptEnv'
+        - 'PrintMotd'
     tags: step-1
 
   - name: STEP-2A Backing up defs file
@@ -266,12 +266,12 @@
 
   - name: STEP-12B Copying /etc/pam.d/system-auth
     shell: cat /mnt/post_install/new_build/system-auth7 > /etc/pam.d/system-auth
-    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == "7"
+    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == '7'
     tags: step-12
 
   - name: STEP-12C Copying /etc/pam.d/password-auth
     shell: cat /mnt/post-install/new_build/password-auth8 > /etc/pam.d/password-auth
-    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == "8"   
+    when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == '8'   
     tags: step-12
 
   - name: STEP-13A Removing old repo
@@ -288,21 +288,37 @@
       dest: /etc/yum.repos.d/rhel8build.repo
     tags: step-13
 
+
   - name: STEP-13D Installing packages ---- NEED DISCUSSION
     yum:
-      name: "{{ item }}"
-      state: latest
-    with_items:
-      - net-tools
-      - libstdc++.so.5
-      - ksh
-      - ntp
-      - bc
-      - unzip
-      - nc
-      - perl-5*
-      - mksh
+      state: present
+      name:
+        - net-tools
+        - libstdc++.so.5
+        - ksh
+        - ntp
+        - bc
+        - unzip
+        - nc
+        - perl-5*
+        - mksh
     tags: step-13
+
+#  - name: STEP-13D Installing packages ---- NEED DISCUSSION
+#    yum:
+#      name: "{{ item }}"
+#      state: latest
+#    with_items:
+#      - net-tools
+#      - libstdc++.so.5
+#      - ksh
+#      - ntp
+#      - bc
+#      - unzip
+#      - nc
+#      - perl-5*
+#      - mksh
+#    tags: step-13
 
   - name: STEP-13E Running updates
     shell: yum -y update
@@ -369,22 +385,28 @@
     copy:
       src: /mnt/post_install/new_build/sudoers.current/sudoers.rhel.current 
       dest: /etc/sudoers
+#      remote_src: yes
     tags: step-15
 
   - name: STEP-15C Copying /etc/sudoers
     copy:
-      src: /mnt/post_install/new_build/sudoers.current/sudoers.d/*
-      dest: /etc/sudoers.d/
-      remote_src: yes
+      src: /mnt/post_install/new_build/sudoers.current/sudoers.d
+      dest: /etc/sudoers.d
+      mode: 440
+      group: root
+      owner: root      
+#      remote_src: yes
     tags: step-15
 
-  - name: STEP-15D changing permissions on sudoers.d
-    shell: chmod 440 /etc/sudoers.d/*
-    tags: step-15
+#  - name: STEP-15D changing permissions on sudoers.d
+#    file:
+#      path: /etc/sudoers.d/*
+#      mode: 440
+#    tags: step-15
 
-  - name: STEP-15E changing Ownership on sudoers.d
-    shell: chown -R root:root /etc/sudoers.d
-    tags: step-15
+#  - name: STEP-15E changing Ownership on sudoers.d
+#    shell: chown -R root:root /etc/sudoers.d
+#    tags: step-15
 
   - name: STEP-16A copy text from /etc/motd to motd and issue
     shell: cat /mnt/post_install/new_build/motd > /etc/motd
@@ -637,17 +659,17 @@
 
   - name: STEP-32D Copying multipath.6 from NFS
     shell: cat /mnt/post_install/new_build/multipath.conf.6 > /etc/multipath.conf
-    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "6"
+    when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '6'
     tags: step-32
 
   - name: STEP-32D Copying multipath from NFS
     shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
-    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "7"
+    when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '7'
     tags: step-32
 
   - name: STEP-32D Copying multipath from NFS
     shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
-    when: ansible_distribution_file_search_string == "Red Hat"  and ansible_distribution_major_version == "8"
+    when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '8'
     tags: step-32
 
 #    copy:
@@ -830,15 +852,16 @@
 
   - name: STEP-36J Creating HOSTNAME
     file:
-      path: /pub/EP2Scan_results/HOSTNAME
+      path: /pub/EP2Scan_results/$HOSTNAME
       state: directory
     tags: step-36
   
-  - name: STEP-36K Copying files to Hostname
-    copy:
-      src: /tmp/EP2_Driver_V2.0.8.sh.files
-      dest: /pub/EP2Scan_results/HOSTNAME/
-    tags: step-36
+#  - name: STEP-36K Copying files to Hostname
+#    copy:
+#      src: /tmp/EP2_Driver_V2.0.8.sh.files
+#      dest: /pub/EP2Scan_results/$HOSTNAME/
+#      remote_src: yes
+#    tags: step-36
 
   - name: STEP-36L Unmounting /pub
     shell: umount /pub
@@ -921,7 +944,7 @@
 
   - name: STEP-42A Install Splunk Forwarder
     unarchive:
-      src: /mnt/post_install/new_build/splunk/splunkforwarder-6.4.4-b53a5c14bb5e-Linux-x86_64.tar.gz
+      src: /mnt/post_install/new_build/Splunk/splunkforwarder-6.4.4-b53a5c14bb5e-Linux-x86_64.tgz
       dest: /opt/
       remote_src: yes
     tags: step-42
