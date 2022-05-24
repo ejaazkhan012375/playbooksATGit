@@ -1,0 +1,93 @@
+---
+- hosts: localhost
+  gather_facts: no
+#  async: 60
+  vars:
+ 
+    vcenter_server: "10.213.44.4"
+    vcenter_user: "an234639ad@us.ad.wellpoint.com"
+    vcenter_pass: "y%8!H9w-cj28s$29zaE!"
+    datacenter_name: "datacenter-wdc04"
+    cluster_name: "wdc04-compute-07"
+    datastore_name: "vsanDatastore (12)"
+#    name: "item"
+    template_name: "rhel7_2021_golden"
+
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_server }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: False
+      name: "{{ item }}"
+      template: "{{ template_name }}"
+      folder: /vm
+      datacenter: "{{ datacenter_name }}"
+      cluster: "{{ cluster_name }}"
+      datastore: "{{ datastore_name }}"
+    with_items:
+      - dc04plvgen345
+      - dc04plvgen346
+      - dc04plvgen347
+      - dc04plvgen348
+      - dc04plvgen349
+      - dc04plvgen350
+      - dc04plvgen351
+      - dc04plvgen352
+      - dc04plvgen353
+      - dc04plvgen354
+
+
+
+#      networks:
+#      - name: 10.152.4.0/22-wdc-anth-nprd-midtier
+#        ip: "{{ item.vm_ip }}"
+#        netmask: 255.255.252.0
+#        gateway: 10.152.4.1
+#        type: static
+#        dns_servers: 30.128.241.253
+#        customization:
+#        hostname: "{{ item.vm_name }}"
+#        state: poweredon
+#        wait_for_ip_address: yes
+#      loop: "{{ iservers }}"
+    delegate_to: localhost
+
+#      iservers:
+#        - vm_name: dc04plvgen345
+#        - vm_name: dc04plvgen346
+#        - vm_name: dc04plvgen347
+#        - vm_name: dc04plvgen348
+#        - vm_name: dc04plvgen349
+#        - vm_name: dc04plvgen350
+#        - vm_name: dc04plvgen351
+#        - vm_name: dc04plvgen352
+
+#          vm_ip: 10.152.161.22
+#          disk_one_size_in_gb: 100
+#          disk_two_size_in_gb: 310
+#          disk_datastore: vsanDatastore (3)
+#          memory_in_mb: 65536
+#          number_of_cpus: 8
+#          number_of_cpu_cores_per_socket: 1
+
+#        - vm_name: dc04plvgen346
+#          vm_ip: 10.152.161.23 
+#          disk_one_size_in_gb: 100
+#          disk_two_size_in_gb: 310
+#          disk_datastore: vsanDatastore (3)
+#          memory_in_mb: 65536
+#          number_of_cpus: 8
+#          number_of_cpu_cores_per_socket: 1
+
+#        - vm_name: dc04plvgen347
+#          vm_ip: 10.152.161.24
+#          disk_one_size_in_gb: 100
+#          disk_two_size_in_gb: 310
+#          disk_datastore: vsanDatastore (3)
+#          memory_in_mb: 65536
+#          number_of_cpus: 8
+#          number_of_cpu_cores_per_socket: 1
+
+
