@@ -1,0 +1,27 @@
+---
+- hosts: ecs_servers
+  user: root
+  tasks:
+       -  name: mount the nfsshare in client side
+          mount:
+            fstype: nfs
+            opts: defaults
+            state: mounted
+            src: 30.128.116.40:/pub
+            path: "{{ item }}"
+          with_items:
+            - /mnt
+
+       - name: Run VM Post deployment script.
+         shell: ./post_install_rh8-cloud.ksh
+         args:
+          chdir: /mnt/post_install/new_build
+
+
+
+
+
+
+
+
+

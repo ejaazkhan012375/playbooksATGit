@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+ 
+    vcenter_server: "10.213.44.4"
+    vcenter_user: "AN480940AD@us.ad.wellpoint.com"
+    vcenter_pass: 'gAVQK9xc58%cIceN7Cf-'
+    datacenter_name: "datacenter-wdc04"
+    cluster_name: "wdc-nonprod-imperva-01"
+    datastore_name: "vsanDatastore (16)"
+    template_name: "SecureSphere-13.6.0.50_management"
+
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_server }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: False
+      name: "{{ item }}"
+      template: "{{ template_name }}"
+      folder: /Imperva
+      datacenter: "{{ datacenter_name }}"
+      cluster: "{{ cluster_name }}"
+      datastore: "{{ datastore_name }}"
+      state: poweredon
+      wait_for_ip_address: no
+    with_items:
+#      - dc04davimp312
+#      - dc04davimp313
+      - dc04davimp314
+      - dc04davimp315
+      - dc04davimp316
+      - dc04davimp317
+      - dc04davimp318
+      - dc04davimp319
+      - dc04davimp320
+      - dc04davimp321
+      - dc04davimp322
+      - dc04davimp323
+      - dc04davimp324
+      - dc04davimp325
+      - dc04davimp326
+    delegate_to: localhost
+

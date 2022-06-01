@@ -1,0 +1,18 @@
+---
+- name: installing nfs and starting service only
+  hosts: gen_last
+  become: yes
+  gather_facts: no
+  ignore_errors: yes
+  tasks:
+  - name: Installing nfs
+    yum: 
+      name: nfs-utils
+      state: latest
+
+  - name: starting nfs
+    service:
+      name: nfs-server
+      state: started
+      enabled: yes
+...

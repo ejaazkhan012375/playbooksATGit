@@ -1,0 +1,146 @@
+---
+- name: Updating new servers
+  hosts: cdp_march_last
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks: 
+
+#  - name: removing redhat repo
+#    file:
+#      path: /etc/yum.repos.d/redhat.repo
+#      state: absent
+
+#  - name: removing redhat repo
+#    file:
+#      path: /etc/yum.repos.d/local.repo
+#      state: absent
+
+    
+#  - name: echoing and redirecting
+#    shell: echo "sslverify=false" >> /etc/yum.conf
+
+#  - name: copying rhel8 build repo
+#    copy:
+#      src: /mnt/post_install/new_build/rhel8build.repo
+#      dest: /etc/yum.repos.d/rhel8build.repo
+
+#  - name: installing nfs
+#    yum:
+#      name: nfs-utils
+#      state: latest
+
+#  - name: starting nfs
+#    service:
+#      name: nfs-server
+#      state: started
+#      enabled: yes  
+  
+#  - name: Running update on Targets.
+#    shell: yum -y update
+
+#  - name: 
+#    copy:
+#      src: /etc/resolv.conf
+#      dest: /etc/resolv.conf
+
+#============================================================================================
+
+  - name: resize / to make it 64G
+    lvol:
+      vg: rootvg
+      lv: root
+      size: 64G
+      resizefs: true
+      force: yes
+
+  - name: resize /var to make it 128.G
+    lvol:
+      vg: rootvg
+      lv: var
+      size: 128G
+      resizefs: true
+      force: yes
+
+  - name: resize /opt to mke it 64G
+    lvol:
+      vg: rootvg
+      lv: opt
+      size: 64G
+      resizefs: true
+      force: yes
+
+  - name: resize /tmp to make it 48G
+    lvol:
+      vg: rootvg
+      lv: tmp
+      size: 48G
+      resizefs: true
+      force: yes
+
+  - name: resize /opt/cloudera to make it 64G
+    lvol:
+      vg: rootvg
+      lv: itm_lv
+      size: 64G
+      resizefs: true
+      force: yes
+
+  - name: resize /home to make it 128G
+    lvol:
+      vg: rootvg
+      lv: local_home
+      size: 128G
+      resizefs: true
+      force: yes
+
+  - name: Creating /var/opt/Anthem/Imperva 80G
+    lvol:
+      vg: rootvg
+      lv: imperva
+      size: 80G
+      resizefs: true
+      force: yes
+
+  - name: formatting filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/rootvg/imperva
+      force: yes
+      resizefs: yes
+
+  - name: creating mountpoint for imperva
+    file:
+      path: /var/opt/Anthem/imperva
+      state: directory
+      mode: 0755
+     
+  - name: mounting lv_imperva to /var/opt/Anthem/imperva
+    mount:
+      src: /dev/rootvg/imperva 
+      path: /var/opt/Anthem/imperva
+      state: mounted
+      fstype: xfs
+
+  - name: Adding entry in /etc/fstab for imperva
+    shell: echo /dev/mapper/rootvg/imperva /var/opt/Anthem/imperva xfs defaults 0 0 >> /etc/fstab
+ 
+#============================================================================================
+
+#  - name: mount the nfsshare in client side
+#    mount:
+#      fstype: nfs
+#      opts: defaults
+#      state: mounted
+#      src: 30.128.116.40:/pub
+#      path: "{{ item }}"
+#    with_items:
+#       - /mnt
+
+#  - name: Run VM Post deployment script
+#    shell: ./post_install_rh8-cloud.ksh
+#    args:
+#      chdir: /mnt/post_install/new_build
+
+#============================================================================================
+...

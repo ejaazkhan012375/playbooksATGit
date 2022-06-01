@@ -1,0 +1,7 @@
+---
+- name: checking ansible facts
+  hosts: poc
+  tasks:
+  - debug:
+      var: ansible_facts 
+#["cmdline"]

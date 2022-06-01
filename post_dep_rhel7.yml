@@ -1,0 +1,29 @@
+---
+- name: mounted nfs shares from jump to nodes
+  hosts: dc04plpgen416
+  become: yes
+# ansible_become_method: su
+# ansible_become_exe: 'sudo su -'
+  ignore_errors: yes
+  gather_facts: no
+  tasks:
+  - name: mount the nfsshare in client side
+    mount:
+      src: 30.128.116.40:/pub
+#      path: /mnt/post_install/new_build/post_install_rh7-cld.ksh
+      path: /mnt/post_install/new_build/
+      fstype: nfs
+      state: unmounted
+ 
+
+#  - name: Run VM Post deployment script.
+#    script: /mnt/post_install/new_build/post_install_rh7-cld.ksh
+...
+
+
+
+
+
+
+
+

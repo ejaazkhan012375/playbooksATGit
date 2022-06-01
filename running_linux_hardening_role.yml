@@ -1,0 +1,8 @@
+---
+- name: Running Linux Hardening Role
+  hosts: test_poc
+  become: yes
+  gather_facts: no
+  roles:
+    - linux_hardening_role
+... 

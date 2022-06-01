@@ -1,0 +1,112 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+ 
+    vcenter_server: "10.213.44.4"
+    vcenter_user: "AN480940AD@us.ad.wellpoint.com"
+    vcenter_pass: 'gAVQK9xc58%cIceN7Cf-'
+    datacenter_name: "datacenter-wdc04"
+    cluster_name: "wdc-nonprod-imperva-01"
+    datastore_name: "vsanDatastore (16)"
+    template_name: "SecureSphere-13.6.0.50_Gateway"
+
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_server }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: False
+      name: "{{ item }}"
+      template: "{{ template_name }}"
+      folder: /Imperva
+      datacenter: "{{ datacenter_name }}"
+      cluster: "{{ cluster_name }}"
+      datastore: "{{ datastore_name }}"
+      state: poweredon
+      wait_for_ip_address: no
+    with_items:
+#      - dc04davimp327
+#      - dc04davimp328  
+      - dc04davimp329
+      - dc04davimp330
+      - dc04davimp331
+      - dc04davimp332
+      - dc04davimp333
+      - dc04davimp334
+      - dc04davimp335
+      - dc04davimp336
+      - dc04davimp337
+      - dc04davimp338
+      - dc04davimp339
+      - dc04davimp340 
+      - dc04davimp341
+      - dc04davimp342
+      - dc04davimp343
+      - dc04davimp344
+      - dc04davimp345
+      - dc04davimp346
+      - dc04davimp347
+      - dc04davimp348
+      - dc04davimp349
+      - dc04davimp350
+      - dc04davimp351
+      - dc04davimp352
+      - dc04davimp353
+      - dc04davimp354
+      - dc04davimp355
+      - dc04davimp356
+      - dc04davimp357
+      - dc04davimp358
+      - dc04davimp359
+      - dc04davimp360
+      - dc04davimp361
+      - dc04davimp362
+      - dc04davimp363
+      - dc04davimp364
+      - dc04davimp365
+      - dc04davimp366
+      - dc04davimp367
+      - dc04davimp368
+      - dc04davimp369
+      - dc04davimp370
+      - dc04davimp371
+      - dc04davimp372
+      - dc04davimp373
+      - dc04davimp374
+      - dc04davimp375
+      - dc04davimp376
+      - dc04davimp377
+      - dc04davimp378
+      - dc04davimp379
+      - dc04davimp380
+      - dc04davimp381
+      - dc04davimp382
+      - dc04davimp383
+      - dc04davimp384
+      - dc04davimp385
+      - dc04davimp386
+      - dc04davimp387
+      - dc04davimp388
+      - dc04davimp389
+      - dc04davimp390
+      - dc04davimp391
+      - dc04davimp392
+      - dc04davimp393
+      - dc04davimp394
+      - dc04davimp395
+      - dc04davimp396
+      - dc04davimp397
+      - dc04davimp398
+      - dc04davimp399
+      - dc04davimp400
+      - dc04davimp401
+      - dc04davimp402
+      - dc04davimp403
+      - dc04davimp404
+      - dc04davimp405
+      - dc04davimp406
+    delegate_to: localhost
+

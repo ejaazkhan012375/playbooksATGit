@@ -1,0 +1,130 @@
+[poc]
+dc04dlvpoc001
+
+[cdp_dl04]
+10.152.176.11 ansible_host=dc04plpcdp400 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.12 ansible_host=dc04plpcdp401 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.13 ansible_host=dc04plpcdp402 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.14 ansible_host=dc04plpcdp403 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.15 ansible_host=dc04plpcdp404 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.16 ansible_host=dc04plpcdp405 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.17 ansible_host=dc04plpcdp406 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.18 ansible_host=dc04plpcdp407 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.19 ansible_host=dc04plpcdp408 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.20 ansible_host=dc04plpcdp409 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.21 ansible_host=dc04plpcdp410 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.22 ansible_host=dc04plpcdp411 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.23 ansible_host=dc04plpcdp412 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.24 ansible_host=dc04plpcdp413 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+10.152.176.25 ansible_host=dc04plpcdp414 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+
+[cdp_dl09]
+dl09plpcdp402
+dl09plpcdp403 
+dl09plpcdp404 
+dl09plpcdp405 
+dl09plpcdp406 
+dl09plpcdp407 
+dl09plpcdp408 
+dl09plpcdp409 
+dl09plpcdp410
+dl09plpcdp411 
+dl09plpcdp412
+dl09plpcdp413
+dl09plpcdp414
+
+#=======================================================================
+
+[all_gen]
+10.152.156.165 ansible_host=dc04plpgen400
+10.152.156.166 ansible_host=dc04plpgen401
+10.152.156.167 ansible_host=dc04plpgen402
+10.152.156.168 ansible_host=dc04plpgen403
+10.152.156.169 ansible_host=dc04plpgen404
+10.152.156.170 ansible_host=dc04plpgen405
+10.152.156.171 ansible_host=dc04plpgen406
+10.152.156.172 ansible_host=dc04plpgen407
+10.152.156.173 ansible_host=dc04plpgen408
+10.152.156.174 ansible_host=dc04plpgen409
+10.152.156.175 ansible_host=dc04plpgen410
+10.152.156.176 ansible_host=dc04plpgen411
+10.152.156.177 ansible_host=dc04plpgen412
+10.152.156.178 ansible_host=dc04plpgen413
+10.152.156.179 ansible_host=dc04plpgen414
+10.152.156.180 ansible_host=dc04plpgen415
+10.152.156.181 ansible_host=dc04plpgen416
+10.152.156.182 ansible_host=dc04plpgen417
+10.152.156.183 ansible_host=dc04plpgen418
+10.152.156.184 ansible_host=dc04plpgen419
+10.152.156.185 ansible_host=dc04plpgen420
+10.152.156.186 ansible_host=dc04plpgen421
+
+#======================================================================
+
+[all_ecs]
+dc04dlpecs406
+dc04dlpecs407
+dc04dlpecs408
+dc04dlpecs409
+dc04dlpecs410
+dc04dlpecs411
+dc04dlpecs412
+dc04dlpecs413
+dc04dlpecs414
+dc04dlpecs415
+dc04dlpecs416
+dc04dlpecs417
+dc04dlpecs418
+dc04dlpecs419
+dc04dlpecs420
+dc04dlpecs421
+dc04dlpecs422
+dc04dlpecs423
+dc04dlpecs424
+dc04dlpecs425
+dc04dlpecs426
+dc04dlpecs427
+dc04dlpecs428
+dc04dlpecs429
+dc04dlpecs430
+
+[cdp_300_314_redo]
+dl09plvcdp300
+dl09plvcdp301
+dl09plvcdp302
+dl09plvcdp303
+dl09plvcdp304
+dl09plvcdp305
+dl09plvcdp306
+dl09plvcdp307
+dl09plvcdp308
+dl09plvcdp309
+dl09plvcdp310
+dl09plvcdp311
+dl09plvcdp312
+dl09plvcdp313
+dl09plvcdp314
+
+
+[cdp_march_last]
+dl09plvcdp314
+dl09plvcdp300
+
+#[all:children]
+#cdp_server
+#genesys_servers
+#==========================================================================
+
+[test]
+dc04tlvcdp310.wellpoint.com
+dc04tlvcdp309.wellpoint.com
+dc04tlvcdp308.wellpoint.com
+dc04tlvcdp307.wellpoint.com
+dc04tlvcdp306.wellpoint.com
+dc04tlvcdp305.wellpoint.com
+dc04tlvcdp304.wellpoint.com
+dc04tlvcdp303.wellpoint.com
+dc04tlvcdp302.wellpoint.com
+dc04tlvcdp301.wellpoint.com
+dc04tlvcdp300.wellpoint.com
+

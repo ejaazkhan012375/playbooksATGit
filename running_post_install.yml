@@ -1,0 +1,9 @@
+---
+- name: Running Post Install Role
+  hosts: test_poc
+  become: yes
+  gather_facts: no
+  roles:
+    - post_install.role
+...
+

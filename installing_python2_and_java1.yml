@@ -1,0 +1,46 @@
+---
+- name: installing python 2.7.18 and java
+  hosts: cdp_300_314_redo
+  become: yes
+  ignore_errors: yes
+  tasks:
+  - name: Installling gcc openssl-devel bzip2-devel
+    shell: yum -y install gcc openssl-devel bzip2-devel
+
+  - name: downloading python2
+    get_url:
+      url: https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz
+      dest: /root/python/
+
+  - name: unarchiving python tar.gz
+    unarchive:
+      src: /root/python/Python-2.7.18.tgz
+      dest: /root/python/Python-2.7.18
+
+  - name: Running config script to install python
+    shell: ./configure --enable-optimizations --make-altinstall
+    args:
+      chdir: /root/python/Python-2.7.18
+
+#  - name: Enabling 
+#    shell:  --enable-optimizations
+
+#  - name: Making altinstall
+#    shell: make altinstall
+
+  - name: verifying 
+    shell: python --version
+
+  - name: Installing java
+    yum:
+      name: java
+      state: present
+
+  - name: Installing java
+    yum:
+      name: postgresql
+      state: present
+
+  - name: adding softlink for python
+    shell: ln -s /usr/bin/python2.7 /usr/bin/python
+...

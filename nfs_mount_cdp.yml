@@ -1,0 +1,15 @@
+---
+- hosts: cdp_servers_one
+  user: root
+  tasks:
+       -  name: mount the nfsshare in client side
+          mount:
+            fstype: nfs
+            opts: defaults
+            state: mounted
+            src: 30.128.116.40:/pub
+            path: "{{ item }}"
+          with_items:
+            - /mnt
+...
+
