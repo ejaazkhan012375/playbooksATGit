@@ -1,0 +1,44 @@
+---
+- name: Removing LVs and unmounting filesystems
+  hosts: cdp_may
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+
+  - name: Taking backup of FS before unmounting
+    shell: cp -r /var/history_logs /tmp/backup_var_history_logs
+
+  - name: Unmounting FS /var/history_logs
+    shell: umount /var/history_logs
+
+  - name: Removing LV
+    shell: lvremove -f /dev/mapper/vg_sda/lv_var_history_logs
+    register: lv_removed
+
+  - name: Creating New Logical Vol
+    lvol:
+      vg: vg_sda
+      lv: lv_var_history_logs
+      size: 3G
+      force: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_var_history_logs
+      
+  - name: Remounting New LV
+    mount:
+      path: /var/history_logs 
+      src: /dev/vg_sda/lv_var_history_logs
+      fstype: xfs
+      state: mounted
+      
+  - name: Changing Permissions
+    file:
+      path: /var/history_logs
+      mode: 1755
+
+...
+

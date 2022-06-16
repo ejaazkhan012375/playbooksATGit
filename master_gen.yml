@@ -1,0 +1,156 @@
+---
+- name: Master Playbook to run all required tasks
+  hosts: gen_last
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+
+  - name: Taking backup of FS before unmounting
+    shell: cp -r /var/history_logs /tmp/backup_var_history_logs
+
+  - name: Unmounting FS /var/history_logs
+    shell: umount /var/history_logs
+
+  - name: Removing LV
+    shell: lvremove -f /dev/mapper/vg_sda/lv_var_history_logs
+    register: lv_removed
+
+  - name: Creating New Logical Vol
+    lvol:
+      vg: vg_sda
+      lv: lv_var_history_logs
+      size: 3G
+      force: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_var_history_logs
+      
+  - name: Remounting New LV
+    mount:
+      path: /var/history_logs 
+      src: /dev/vg_sda/lv_var_history_logs
+      fstype: xfs
+      state: mounted
+      
+  - name: Changing Permissions
+    file:
+      path: /var/history_logs
+      mode: 1755
+ 
+#============================================================================
+ 
+  - name: creating dir /apps to mount
+    file:
+      path: /apps
+      state: directory
+      mode: "0755"
+ 
+  - name: creating lv_app
+    lvol:
+      vg: vg_sda
+      lv: lv_apps
+      size: 40G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_apps
+ 
+  - name:
+    mount:
+      path: /apps
+      src: /dev/vg_sda/lv_apps
+      fstype: xfs
+      state: mounted
+
+#=============================================================================
+
+  - name: creating dir /apps/genesys
+    file:
+      path: /apps/genesys
+      state: directory
+      mode: "0777"
+
+  - name: creating lv_genesys
+    lvol:
+      vg: vg_sda
+      lv: lv_genesys
+      size: 100G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_genesys
+
+  - name: mounting lv_genesys to /apps/genesys
+    mount:
+      path: /apps/genesys  
+      src: /dev/vg_sda/lv_genesys
+      fstype: xfs
+      state: mounted
+
+#===============================================================================
+
+  - name: creating dir /apps/genesys/logs
+    file:
+      path: /apps/genesys/logs
+      state: directory
+      mode: "0777"
+
+  - name: creating lv_logs
+    lvol:
+      vg: vg_sda
+      lv: lv_logs
+      size: 350G
+
+  - name: format xfs filesystem
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_logs
+
+  - name: mounting lv_logs to /apps/genesys/logs
+    mount:
+      path: /apps/genesys/logs
+      src: /dev/vg_sda/lv_logs
+      fstype: xfs
+      state: mounted
+
+#==================================================================================
+
+  - name: Installing nfs
+    yum: 
+      name: nfs-utils
+      state: latest
+
+  - name: starting nfs
+    service:
+      name: nfs-server
+      state: started
+      enabled: yes
+
+#==================================================================================
+
+  - name: moving rehdat repo
+    shell: mv /etc/yum.repos.d/redhat.repo /root/redhat_repo_backup_feb422
+
+  - name: adding sslverify falst
+    shell: echo sslverify=false >> /etc/yum.conf
+
+  - name: copying local repos to nodes
+    copy:
+      src: /tmp/local.repo
+      dest: /etc/yum.repos.d/
+
+
+  - name: Running updates on all nodes
+    shell: yum -y update
+
+  - name: copying resolv.conf to nodes
+    copy:
+      src: /etc/resolv.conf
+      dest: /etc/resolv.conf
+    
+...

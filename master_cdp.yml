@@ -1,0 +1,144 @@
+---
+- name: Updating new servers
+  hosts: cdp_test
+  become: yes
+  ignore_errors: yes
+  gather_facts: no
+  tasks: 
+
+  - name: removing redhat repo
+    shell: rm /etc/yum.repos.d/redhat.repo
+    
+  - name: echoing and redirecting
+    shell: echo "sslverify=false" >> /etc/yum.conf
+
+  - name: copying rhel8 build repo
+    copy:
+      src: /mnt/post_install/new_build/rhel8build.repo
+      dest: /etc/yum.repos.d/rhel8build.repo
+
+  - name: installing nfs
+    yum:
+      name: nfs-utils
+      state: latest
+
+  - name: starting nfs
+    service:
+      name: nfs-server
+      state: started
+      enabled: yes  
+  
+  - name: Running update on Targets.
+    shell: yum -y update
+
+  - name: 
+    copy:
+      src: /etc/resolv.conf
+      dest: /etc/resolv.conf
+
+#============================================================================================
+
+  - name: Taking backup of FS before unmounting
+    shell: cp -r /var/history_logs /tmp/backup_var_history_logs
+
+  - name: Unmounting FS /var/history_logs
+    shell: umount /var/history_logs
+
+  - name: Removing LV
+    shell: lvremove -f /dev/mapper/vg_sda/lv_var_history_logs
+    register: lv_removed
+
+  - name: Creating New Logical Vol
+    lvol:
+      vg: vg_sda
+      lv: lv_var_history_logs
+      size: 3G
+      force: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/vg_sda/lv_var_history_logs
+      
+  - name: Remounting New LV
+    mount:
+      src: /dev/vg_sda/lv_var_history_logs      
+      path: /var/history_logs 
+      fstype: xfs
+      state: mounted
+      
+  - name: Changing Permissions
+    file:
+      path: /var/history_logs
+      mode: 0755
+
+#=============================================================================================
+
+  - name: resize / to make it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_root
+      size: 64G
+      resizefs: true
+
+  - name: resize /var to make it 128.G
+    lvol:
+      vg: vg_sda
+      lv: lv_var
+      size: 128G
+      resizefs: true
+
+  - name: resize /opt to mke it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_opt
+      size: 64G
+      resizefs: true
+
+  - name: resize /tmp to make it 48G
+    lvol:
+      vg: vg_sda
+      lv: lv_tmp
+      size: 48G
+      resizefs: true
+
+  - name: resize /opt/cloudera to make it 64G
+    lvol:
+      vg: vg_sda
+      lv: lv_opt_IBM_ITM
+      size: 64G
+      resizefs: true
+
+  - name: resize /home to make it 128G
+    lvol:
+      vg: vg_sda
+      lv: lv_local_home
+      size: 128G
+      resizefs: true
+
+#============================================================================================
+
+  - name: mount the nfsshare in client side
+    mount:
+      fstype: nfs
+      opts: defaults
+      state: mounted
+      src: 30.128.116.40:/pub
+      path: "{{ item }}"
+    with_items:
+       - /mnt
+
+  - name: Run VM Post deployment script.
+    shell: ./post_install_rh8-cloud.ksh
+    args:
+      chdir: /mnt/post_install/new_build
+
+#============================================================================================
+  - name: Verifying if centrify is installed
+    shell: centrify --version
+    register: centrify_version
+
+  - name: confirming centry 
+    debug: msg='{centrify_version.stdout.lines}'
+
+...

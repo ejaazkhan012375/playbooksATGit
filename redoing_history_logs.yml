@@ -1,0 +1,113 @@
+---
+- name: Removing LVs and unmounting filesystems
+  hosts: cdp_300_314_redo
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks:
+ 
+  - name: Taking backup of FS before unmounting
+    shell: cp -r /var/history_logs /tmp/backup_var_history_logs
+
+  - name: Unmounting FS /var/history_logs
+    shell: umount /var/history_logs
+
+  - name: Removing LV
+    shell: lvremove -f /dev/mapper/rootvg/var_history_logs
+    register: lv_removed
+
+  - name: Creating New Logical Vol
+    lvol:
+      vg: rootvg
+      lv: var_history_logs
+      size: 3G
+      force: yes
+      resizefs: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/rootvg/var_history_logs
+      
+  - name: Remounting New LV
+    mount:
+      path: /var/history_logs 
+      src: /dev/rootvg/var_history_logs
+      fstype: xfs
+      state: mounted
+      
+  - name: Changing Permissions
+    file:
+      path: /var/history_logs
+      mode: 755
+
+  - name: Creating lv_imperva
+    lvol:
+      vg: rootvg
+      lv: imperva_lv
+      size: 80G
+      force: yes
+      resizefs: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/rootvg/imperva_lv
+
+  - name: Creating mountpoint for imperva
+    shell: mkdir -p /var/opt/Anthem/Imperva
+
+  - name: Remounting New LV
+    mount:
+      path: /var/opt/Anthem/Imperva
+      src: /dev/rootvg/imperva_lv
+      fstype: xfs
+      state: mounted
+
+  - name: Changing Permissions
+    file:
+      path: /var/opt/Anthem/Imperva
+      mode: 755
+
+  - name: Entry in fstab
+    lineinfile:
+      path: /etc/fstab
+      line: /dev/rootvg/imperva_lv /var/opt/Anthem/Imperva xfs defaults 0 0
+      insertafter: EOF
+
+ - name: Creating cloudera_lv
+    lvol:
+      vg: rootvg
+      lv: cloudera_lv
+      size: 64G
+      force: yes
+      resizefs: yes
+
+  - name: Formatting xfs FS
+    filesystem:
+      fstype: xfs
+      dev: /dev/rootvg/cloudera_lv
+
+  - name: Creating mountpoint for imperva
+    shell: mkdir /opt/cloudera
+
+  - name: Remounting New LV
+    mount:
+      path: /opt/cloudera
+      src: /dev/rootvg/cloudera_lv
+      fstype: xfs
+      state: mounted
+
+  - name: Changing Permissions
+    file:
+      path: /opt/cloudera
+      mode: 755
+
+  - name: Entry in fstab
+    lineinfile:
+      path: /etc/fstab
+      line: /dev/rootvg/cloudera_lv /opt/cloudera xfs defaults 0 0
+      insertafter: EOF
+
+...
+

@@ -1,0 +1,39 @@
+---
+- name: Updating new servers
+  hosts: cdp_300_314_redo
+  become: yes
+  ignore_errors: yes
+  gather_facts: yes
+  tasks: 
+
+  - name: removing redhat repo
+    shell: rm /etc/yum.repos.d/redhat.repo
+    
+  - name: echoing and redirecting
+    shell: echo "sslverify=false" >> /etc/yum.conf
+
+  - name: copying rhel8 build repo
+    copy:
+      src: /mnt/post_install/new_build/rhel8build.repo
+      dest: /etc/yum.repos.d/rhel8build.repo
+
+  - name: installing nfs
+    yum:
+      name: nfs-utils
+      state: latest
+
+  - name: starting nfs
+    service:
+      name: nfs-server
+      state: started
+      enabled: yes  
+  
+  - name: Running update on Targets.
+    shell: yum -y update
+
+  - name: 
+    copy:
+      src: /etc/resolv.conf
+      dest: /etc/resolv.conf
+
+...     

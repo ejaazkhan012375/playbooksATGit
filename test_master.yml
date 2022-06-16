@@ -1,0 +1,14 @@
+---
+- name: Updating new servers
+  hosts: cdp_test
+  become: yes
+  ignore_errors: yes
+  gather_facts: no
+  tasks: 
+  - name: Verifying if centrify is installed
+    shell: rpm -qa | grep -i centrify
+    register: centrify_version
+
+  - debug: msg='{centrify_version.stdout.lines}'
+
+...

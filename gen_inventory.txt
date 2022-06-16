@@ -1,0 +1,37 @@
+
+[gen_one]
+10.152.156.165 ansible_host=dc04plpgen400
+10.152.156.166 ansible_host=dc04plpgen401
+10.152.156.167 ansible_host=dc04plpgen402 
+10.152.156.168 ansible_host=dc04plpgen403 
+10.152.156.169 ansible_host=dc04plpgen404 
+
+[gen_two]
+10.152.156.170 ansible_host=dc04plpgen405
+10.152.156.171 ansible_host=dc04plpgen406 
+10.152.156.172 ansible_host=dc04plpgen407 
+10.152.156.173 ansible_host=dc04plpgen408 
+10.152.156.174 ansible_host=dc04plpgen409 
+
+[gen_three]
+10.152.156.175 ansible_host=dc04plpgen410 
+10.152.156.176 ansible_host=dc04plpgen411 
+10.152.156.177 ansible_host=dc04plpgen412 
+10.152.156.178 ansible_host=dc04plpgen413 
+10.152.156.179 ansible_host=dc04plpgen414 
+
+[gen_four]
+10.152.156.180 ansible_host=dc04plpgen415
+10.152.156.181 ansible_host=dc04plpgen416 
+10.152.156.182 ansible_host=dc04plpgen417
+10.152.156.183 ansible_host=dc04plpgen418 
+10.152.156.184 ansible_host=dc04plpgen419 
+10.152.156.185 ansible_host=dc04plpgen420 
+10.152.156.186 ansible_host=dc04plpgen421
+
+[all_gen:children]
+gen_one
+gen_two
+gen_three
+gen_four
+

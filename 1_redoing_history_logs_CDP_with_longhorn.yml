@@ -78,7 +78,7 @@
 #      mode: 1755
   
 #  - name: Entry in fstab
-#    shell: echo /dev/appvg/longhorn-storage /mnt/ecs/longhorn-storage xfs default 0 0 >> /etc/fstab
+#    shell: echo /dev/appvg/longhorn-storage /mnt/ecs/longhorn-storage xfs defaults 0 0 >> /etc/fstab
 
 #  - name: Creating New Logical local-storage
 #    lvol:
@@ -107,7 +107,7 @@
 #      mode: 1755
 
 #  - name: Entry in fstab
-#    shell: echo /dev/appvg/local-storage /mnt/ecs/local-storage xfs default 0 0 >> /etc/fstab
+#    shell: echo /dev/appvg/local-storage /mnt/ecs/local-storage xfs defaults 0 0 >> /etc/fstab
 
 ...
 

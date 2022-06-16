@@ -1,0 +1,15 @@
+---
+- name: copying local repo to cdp_may
+  hosts: cdp_may
+  become: yes
+  gather_facts: yes
+  ignore_errors: yes
+  tasks:
+  - name: copy file
+    copy:
+      src: /mnt/post_install/new_build/local.repo
+      dest: /etc/yum.repos.d/local.repo
+      remote_src: yes
+    
+...
+    

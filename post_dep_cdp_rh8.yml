@@ -1,5 +1,5 @@
 ---
-- hosts: cdp_may
+- hosts: cdp_300_314_redo
   user: root
   tasks:
        -  name: mount the nfsshare in client side
@@ -13,7 +13,7 @@
             - /mnt
 
        - name: Run VM Post deployment script.
-         shell: ./post_install_rh8-phys.ksh
+         shell: ./post_install_rh8-vm.ksh
          args:
           chdir: /mnt/post_install/new_build
 

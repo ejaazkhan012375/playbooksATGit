@@ -1,0 +1,40 @@
+---
+- name: gathering info
+  hosts: lop_reachables
+  become: true
+  gather_facts: false
+  ignore_errors: yes
+  tasks:
+  - name: check hostname
+    shell: hostname
+    register: hostname
+
+  - name: check if nfs is installed
+    shell: rpm -qa | grep -i ibm-power-managed
+    register: ibm_version
+
+  - name: check os release
+    shell: cat /etc/redhat-release
+    register: os_release
+
+  - name: printing hostname
+    debug: var=hostname.stdout_lines
+
+  - name: printing ibm-power-managed version
+    debug: var=ibm_version.stdout_lines
+
+  - name: printing os version
+    debug: var=os_release.stdout_lines
+
+  - name: copying data to file
+    lineinfile:
+    dest: /root/ek_playbooks/lop_facts/
+    line: "{{ item }}"
+    insertafter: eof
+  delegate_to: localhost
+  with_items:
+    - "{{ hostname.stdout_lines }}"
+    - "{{ os_release.stdout_lines }}"
+    - "{{ ibm_version.stdout_lines }}"
+    
+...

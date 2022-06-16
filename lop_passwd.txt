@@ -1,0 +1,374 @@
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+# Ex 1: Ungrouped hosts, specify before any group headers.
+
+## green.example.com
+## blue.example.com
+## 192.168.100.1
+## 192.168.100.10
+
+# Ex 2: A collection of hosts belonging to the 'webservers' group
+
+## [webservers]
+## alpha.example.org
+## beta.example.org
+## 192.168.1.100
+## 192.168.1.110
+
+# If you have multiple hosts following a pattern you can specify
+# them like this:
+
+## www[001:006].example.com
+
+# Ex 3: A collection of database servers in the 'dbservers' group
+
+## [dbservers]
+## 
+## db01.intranet.mydomain.net
+## db02.intranet.mydomain.net
+## 10.25.1.56
+## 10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+## db-[99:101]-node.example.com
+[test_hosts]
+#10.152.160.92
+#10.152.160.91
+#10.152.160.90
+10.152.32.72
+10.152.176.13
+10.152.176.15	
+10.152.176.16	
+10.152.176.17	
+10.152.176.18	
+10.152.176.19	
+10.152.176.20	
+10.152.176.21	
+10.152.176.22	
+10.152.176.23	
+10.152.176.24	
+10.152.176.25
+
+[cdp_march]
+dl09plvcdp300.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp301.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp302.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp303.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp304.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp305.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp306.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp307.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp308.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp309.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp310.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp311.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp312.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp313.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+dl09plvcdp314.wellpoint.com ansible_user=ah80917 ansible_passwd=Sherdil@082019
+
+[lop_reachables]
+dc04dpvfnm300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvihs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvihs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvihs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvihs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs309 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs310 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs311 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs312 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs313 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs314 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs315 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs316 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs317 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs318 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs319 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs320 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs321 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs322 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs323 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04ppvwbs324 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvfnm300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvihs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvihs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvihs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvihs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs309 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs310 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs311 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs312 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs313 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs314 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dc04tpvwbs315 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+dr_va10ppvmdb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvihs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvihs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvihs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvihs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs006 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs007 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs008 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs009 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs010 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs011 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs012 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs013 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs014 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs015 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs016 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9ppvwbs308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvihs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvihs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvihs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvihs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs006 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs007 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs008 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs009 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs010 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs011 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs012 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs013 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+mom9tpvwbs014 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dlvpoc003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvihs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvpoc300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvwbs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvwbs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvwbs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10dpvwbs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvihs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvihs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvihs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvihs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppviif300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvmdb308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvsas300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvsas301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs006 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs007 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs008 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs009 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs010 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs011 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs012 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs013 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs014 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs015 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs016 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs309 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs312 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs313 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs314 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs315 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs316 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs317 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs318 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs319 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10ppvwbs320 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvehb300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvehb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvehb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvihs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvihs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvihs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvihs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvihs005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvmdb305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs006 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs007 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs008 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs009 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs010 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs011 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs012 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs013 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs014 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs015 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs016 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs017 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs018 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs019 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs020 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs021 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs022 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs023 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va10tpvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33dpvmdb301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33dpvmdb311 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33dpvsas300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33dpvsas301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33ppvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33ppvmdb001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33ppvmdb002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33ppvmdb002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvidc001 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvidc002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb002 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb003 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb004 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb005 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb006 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb309 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb310 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb311 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb312 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb313 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvmdb314 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs300 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs301 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs302 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs303 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs304 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs305 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs306 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs307 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs308 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs309 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs310 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs311 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs312 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs313 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs314 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs315 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs316 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs317 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs318 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs320 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs321 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs322 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs323 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs324 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs325 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs326 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs327 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs328 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs329 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs330 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs331 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs332 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs333 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs334 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs335 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs336 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs343 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs344 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs345 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs346 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs347 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+va33tpvwbs348 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
+
+
+
+
+
+
+
+
+

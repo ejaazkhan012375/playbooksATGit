@@ -16,31 +16,7 @@
 10.152.176.25 ansible_host=dc04plpcdp414 ansible_user=ah80917 ansible_passwd=Zaynah$03052014
 
 [cdp_test]
-dc04plpcdp417
-
-[cdp_may]
-dc04plpcdp415
-dc04plpcdp416 
-dc04plpcdp417 
-dc04plpcdp418 
-dc04plpcdp419 
-dc04plpcdp420 
-dc04plpcdp421 
-dc04plpcdp422 
-dc04plpcdp423 
-dc04plpcdp424
-
-[cdp_mid_may]
-dc04tlpcdp415
-dc04tlpcdp416 
-dc04tlpcdp417 
-dc04tlpcdp418 
-dc04tlpcdp419 
-dl09plpcdp415 
-dl09plpcdp416 
-dl09plpcdp417 
-dl09plpcdp418 
-dl09plpcdp419 
+dl09plvcdp300
 
 
 [cdp_300_314_redo]

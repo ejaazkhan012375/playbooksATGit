@@ -1,6 +1,6 @@
 ---
 - name: resizing filesystem
-  hosts: cdp_may
+  hosts: cdp_300_314_redo
   become: yes
   ignore_errors: yes
   gather_facts: yes
@@ -8,45 +8,44 @@
 
     - name: resize / to make it 64G
       lvol:
-        vg: vg_sda
-        lv: lv_root
+        vg: rootvg
+        lv: root
         size: 64G
         resizefs: true
 
     - name: resize /var to make it 128.G
       lvol:
-        vg: vg_sda
-        lv: lv_var
+        vg: rootvg
+        lv: var
         size: 128G
         resizefs: true
 
     - name: resize /opt to mke it 64G
       lvol:
-        vg: vg_sda
-        lv: lv_opt
+        vg: rootvg
+        lv: opt
         size: 64G
         resizefs: true
 
     - name: resize /tmp to make it 48G
       lvol:
-        vg: vg_sda
-        lv: lv_tmp
+        vg: rootvg
+        lv: tmp
         size: 48G
         resizefs: true
 
     - name: resize /opt/cloudera to make it 64G
       lvol:
-        vg: vg_sda
-        lv: lv_opt_IBM_ITM
-        size: 64G
+        vg: rootvg
+        lv: opt_IBM_ITM
+        size: 3G
         resizefs: true
 
     - name: resize /home to make it 128G
       lvol:
-        vg: vg_sda
-        lv: lv_local_home
+        vg: rootvg
+        lv: local_home
         size: 128G
         resizefs: true
-
 ...
 
