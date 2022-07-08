@@ -1,11 +1,20 @@
-- name: This playbook will replace out script for deployment
-  hosts: poc  
+---   
+- name: This playbook will replace our script for deployment
+  hosts: tosstlvans300.wellpoint.com
   become: yes
   ignore_errors: yes
+  gather_facts: yes
   vars:
     nfs: /mnt/post_install/new_build/
 
   tasks:
+  - name: mounting shares from jump pub
+    mount:
+      path: /mnt
+      src: 30.128.116.40:/pub
+      state: mounted
+    tags: step-0
+      
   - name: STEP-0A Backing up /etc/resolv file
     copy: 
       src: /etc/resolv.conf
@@ -15,7 +24,7 @@
 
   - name: STEP-0B Copying Resolv file
     copy:
-      src: /mnt/post_install/new_build/resolv.conf
+      src: "'{{ nfs }}'/resolv.conf"
       dest: /etc/resolv.conf
     tags: step-0
 
@@ -92,7 +101,7 @@
 
   - name: STEP-5B Copying hosts file
     copy:
-      src: /mnt/post_install/new_build/hosts.tmp
+      src: "'{{ nfs }}'/hosts.tmp"
       dest: /etc/hosts
 #      remote_src: yes
     tags: step-5
@@ -185,7 +194,7 @@
     tags: step-10
 
   - name: STEP-10B2 Updating etc bashrc
-    shell: cat /mnt/post_install/new_build/umaskbashrc.txt >> /etc/bashrc
+    shell: cat "'{{ nfs }}'/umaskbashrc.txt >> /etc/bashrc"
     tags: step-10
 
   - name: STEP-10C1 Copying /etc/profile
@@ -195,7 +204,7 @@
     tags: step-10
 
   - name: STEP-10C2 Updating etc profile
-    shell: cat /mnt/post_install/new_build/umaskprofile.txt /mnt/post_install/new_build/secondary_logging.txt >> /etc/profile
+    shell: cat "'{{ nfs }}'/umaskprofile.txt" "'{{ nfs }}'/secondary_logging.txt" >> /etc/profile
     tags: step-10
 
   - name: Updating etc profile
@@ -203,7 +212,7 @@
     tags: step-10
 
   - name: STEP-10C3 Updating etc profile
-    shell: cat /mnt/post_install/new_build/secondary_logging.txt >> /etc/profile
+    shell: cat "'{{ nfs }}'/secondary_logging.txt >> /etc/profile"
     tags: step-10
 
   - name: STEP-11A chaging permission on /var/spool
@@ -250,7 +259,7 @@
 
   - name: STEP-11L Copying /etc/securetty
     copy:
-      src: /mnt/post_install/new_build/securetty
+      src: "'{{ nfs }}'/securetty"
       dest: /etc/securetty
     tags: step-11
 
@@ -265,12 +274,12 @@
     register: os_family
 
   - name: STEP-12B Copying /etc/pam.d/system-auth
-    shell: cat /mnt/post_install/new_build/system-auth7 > /etc/pam.d/system-auth
+    shell: cat "'{{ nfs }}'/system-auth7 > /etc/pam.d/system-auth"
     when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == '7'
     tags: step-12
 
   - name: STEP-12C Copying /etc/pam.d/password-auth
-    shell: cat /mnt/post-install/new_build/password-auth8 > /etc/pam.d/password-auth
+    shell: cat "'{{ nfs }}'/password-auth8 > /etc/pam.d/password-auth"
     when: ansible_distribution == "Red Hat" and ansible_distribution_major_version == '8'   
     tags: step-12
 
@@ -284,25 +293,25 @@
 
   - name: STEP-13C Adding new local repo
     copy:
-      src: /mnt/post_install/new_build/rhel8build.repo
+      src: "'{{ nfs }}'/rhel8build.repo"
       dest: /etc/yum.repos.d/rhel8build.repo
     tags: step-13
 
 
-  - name: STEP-13D Installing packages ---- NEED DISCUSSION
-    yum:
-      state: present
-      name:
-        - net-tools
-        - libstdc++.so.5
-        - ksh
-        - ntp
-        - bc
-        - unzip
-        - nc
-        - perl-5*
-        - mksh
-    tags: step-13
+#  - name: STEP-13D Installing packages ---- NEED DISCUSSION
+#    yum:
+#      state: present
+#      name:
+#        - net-tools
+#       - libstdc++.so.5
+#       - ksh
+#       - ntp
+#       - bc
+#       - unzip
+#       - nc
+#       - perl-5*
+#       - mksh
+#   tags: step-13
 
 #  - name: STEP-13D Installing packages ---- NEED DISCUSSION
 #    yum:
@@ -383,14 +392,14 @@
 
   - name: STEP-15B Copying /etc/sudoers
     copy:
-      src: /mnt/post_install/new_build/sudoers.current/sudoers.rhel.current 
+      src: "'{{ nfs }}'/sudoers.current/sudoers.rhel.current "
       dest: /etc/sudoers
 #      remote_src: yes
     tags: step-15
 
   - name: STEP-15C Copying /etc/sudoers
     copy:
-      src: /mnt/post_install/new_build/sudoers.current/sudoers.d
+      src: "'{{ nfs }}'/sudoers.current/sudoers.d"
       dest: /etc/sudoers.d
       mode: 440
       group: root
@@ -409,11 +418,11 @@
 #    tags: step-15
 
   - name: STEP-16A copy text from /etc/motd to motd and issue
-    shell: cat /mnt/post_install/new_build/motd > /etc/motd
+    shell: cat "'{{ nfs }}'/motd > /etc/motd"
     tags: step-16
 
   - name: STEP-16B copy text from /etc/motd to motd and issue
-    shell: cat /mnt/post_install/new_build/motd > /etc/issue
+    shell: cat "'{{ nfs }}'/motd > /etc/issue"
     tags: step-16
 
 #  - name: STEP-17A NEED DISCUSSION - AS PER DISCUSSION WITH JASON, WE DONT NEED THIS ANYMORE..
@@ -432,7 +441,7 @@
 
   - name: STEP-18B Copying /etc/chrony.conf
     copy:
-      src: /mnt/post_install/new_build/chrony.conf
+      src: "'{{ nfs }}'/chrony.conf"
       dest: /etc/chrony.conf
     tags: step-18
 
@@ -446,7 +455,7 @@
 #  - name: STEP-19A instaling tivoli - NEED DISCUSSION -- WHOLE TASK IS COMMENTED OUT ON SCRIPT
  
   - name: STEP-20A Installing TSM Client with NFS script
-    script: /mnt/post_install/new_build/install-tsm.sh
+    script: "'{{ nfs }}'/install-tsm.sh"
     tags: step-20
 
 #  - name: STEP-21A SRM - Creating srmcoll group -- THIS WHOLE TASK IS COMMENTED OUT ON SCRIPT
@@ -498,7 +507,7 @@
 
   - name: STEP-22E copying /etc/resolv.conf from mnt
     copy:
-      src: /mnt/post_install/new_build/resolv.conf
+      src: "'{{ nfs }}'/resolv.conf"
       dest: /etc/resolv.conf
     tags: step-22
 
@@ -507,11 +516,11 @@
     tags: step-23
 
   - name: STEP-23B Running allid-usonly.sh
-    script: /mnt/post_install/new_build/allid.sh
+    script: "'{{ nfs }}'/allid.sh"
     tags: step-23
 
 #  - name: STEP-24A Installing Tonic ---- THIS WHOLE TASK IS COMMENTED OUT IN SCRIPT
-#    shell: rpm -i /mnt/post_install/new_build/Tonic-1.09-1.noarch.rpm
+#    shell: rpm -i "'{{ nfs }}'/Tonic-1.09-1.noarch.rpm"
 #    tags: step-24
 
 #  - name: STEP-25A rsyslog config
@@ -542,7 +551,7 @@
 
   - name: STEP-25F Bringing new rsyslog from NFS
     copy:
-      src: /mnt/post_install/new_build/rsyslog.conf
+      src: "'{{ nfs }}'/rsyslog.conf"
       dest: /etc/rsyslog.conf
     tags: step-25
 
@@ -589,7 +598,7 @@
 
 #  - name: STEP-27D copying config files
 #    copy:
-#      src: /mnt/post_install/new_build/vsaclient-Linux/*
+#      src: "'{{ nfs }}'/vsaclient-Linux/*"
 #      dest: /opt/IBM/fusion/.
 #    tags: step-27
  
@@ -600,7 +609,7 @@
 #    tags: step-27
 
 #  - name: STEP-28A Bladelogic - NOT REQUIRED - NEED DISCUSSION
-#    script: /mnt/post_install/new_build/NSH750-264-RHAS4X86_64.SH
+#    script: "'{{ nfs }}'/NSH750-264-RHAS4X86_64.SH"
 #    tags: step-28
 
 #  - name: STEP-28B Starting rscd
@@ -610,7 +619,7 @@
 #    tags: step-28
 
   - name: STEP-29A Running script to add IDs
-    script: /mnt/post_install/new_build/aocid.sh
+    script: "'{{ nfs }}'/aocid.sh"
     tags: step-29
 
   - name: STEP-29B NEED DISCUSSION
@@ -658,17 +667,17 @@
 #    tags: step-32
 
   - name: STEP-32D Copying multipath.6 from NFS
-    shell: cat /mnt/post_install/new_build/multipath.conf.6 > /etc/multipath.conf
+    shell: cat "'{{ nfs }}'/multipath.conf.6 > /etc/multipath.conf"
     when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '6'
     tags: step-32
 
   - name: STEP-32D Copying multipath from NFS
-    shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
+    shell: cat "'{{ nfs }}'/multipath.conf > /etc/multipath.conf"
     when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '7'
     tags: step-32
 
   - name: STEP-32D Copying multipath from NFS
-    shell: cat /mnt/post_install/new_build/multipath.conf > /etc/multipath.conf
+    shell: cat "'{{ nfs }}'/multipath.conf > /etc/multipath.conf"
     when: ansible_distribution == "Red Hat"  and ansible_distribution_major_version == '8'
     tags: step-32
 
@@ -681,7 +690,7 @@
 
 #  - name: STEP-32D Copying multipath from NFS
 #    copy:
-#      src: /mnt/post_install/new_build/multipath.conf
+#      src: "'{{ nfs }}'/multipath.conf"
 #      dest: /etc/multipath.conf
 #     remote_src: yes
 #    when: rhel_release.stdout_lines == "Red Hat Enterprise Linux release 7.*"
@@ -689,7 +698,7 @@
 
 #  - name: STEP-32D Copying multipath from NFS
 #    copy:
-#      src: /mnt/post_install/new_build/multipath.conf
+#      src: "'{{ nfs }}'/multipath.conf"
 #      dest: /etc/multipath.conf
 #      remote_src: yes
 #    when: rhel_release.stdout_lines == "Red Hat Enterprise Linux release 8.*"
@@ -710,19 +719,19 @@
       
 #  - name: STEP-33B Copying gep.ksh and copy sudo.sh
 #    copy:
-#      src: /mnt/post_install/new_build/toolschk.sh
+#      src: "'{{ nfs }}'/toolschk.sh"
 #      dest: /opt/admin/.
 #    tags: step-33
 
 #  - name: STEP-33C Copying gep.ksh and copy sudo.sh
 #    copy:
-#      src: /mnt/post_install/new_build/gep.ksh
+#      src: "'{{ nfs }}'/gep.ksh"
 #      dest: /opt/admin/.
 #    tags: step-33
 
   - name: STEP-33D Copying gep.ksh and copy sudo.sh
     copy:
-      src: /mnt/post_install/new_build/sudo_copy.sh
+      src: "'{{ nfs }}'/sudo_copy.sh"
       dest: /opt/admin/.
       mode: 775
     tags: step-33
@@ -783,7 +792,7 @@
 
   - name: STEP-35A Copying Qradar package 
     copy:
-      src: /mnt/post_install/new_build/Qradar2021/qrd73000_us_0.csplin.install_iplno_Anthem_va10p30207_2021-09-10.tar
+      src: "'{{ nfs }}'/Qradar2021/qrd73000_us_0.csplin.install_iplno_Anthem_va10p30207_2021-09-10.tar"
       dest: /
     tags: step-35
 
@@ -832,7 +841,7 @@
     tags: step-36
 
   - name: STEP-36G Running EDP script
-    script: /mnt/post_install/new_build/EP2/EP2_Driver_V2.0.8.sh
+    script: "'{{ nfs }}'/EP2/EP2_Driver_V2.0.8.sh"
 #    remote_src: yes
     tags: step-36
 
@@ -885,15 +894,15 @@
     command:
       argv:
         - mv /etc/Muttrc /etc/Muttrc_orig
-        - cp /mnt/post_install/new_build/Muttrc /etc/Muttrc
+        - cp "'{{ nfs }}'/Muttrc /etc/Muttrc"
     tags: step-37
 
   - name: STEP-38A TPC SRA Agent
-    command: /mnt/post_install/new_build/LINUX_SRA/linux_ix86/bin/Agent -install -force -serverPort 9549 -serverIp 30.132.129.73  -installLoc "/opt/IBM/TPC" -agentPort 49101 -commType daemon
+    command: "'{{ nfs }}'/LINUX_SRA/linux_ix86/bin/Agent -install -force -serverPort 9549 -serverIp 30.132.129.73  -installLoc /opt/IBM/TPC -agentPort 49101 -commType daemon"
     tags: step-38
 
   - name: STEP-39A Tanium Install
-    script: /mnt/post_install/new_build/tanium/install-tanium.sh
+    script: "'{{ nfs }}'/tanium/install-tanium.sh"
 #    remote_src: yes
     tags: step-39
 
@@ -904,7 +913,7 @@
     tags: step-39
 
   - name: STEP-40A Install Flexra
-    script: /mnt/post_install/new_build/Flexera/flexera.sh
+    script: "'{{ nfs }}'/Flexera/flexera.sh"
     tags: step-40
 
   - name: STEP-41A TCS Compliance steps
@@ -923,7 +932,7 @@
 
   - name: STEP-41C Copy NEW pwquality.conf
     copy:
-      src: /mnt/post_install/new_build/pwquality.conf
+      src: "'{{ nfs }}'/pwquality.conf"
       dest: /etc/security/pwquality.conf
     tags: step-41
 
@@ -944,7 +953,7 @@
 
   - name: STEP-42A Install Splunk Forwarder
     unarchive:
-      src: /mnt/post_install/new_build/Splunk/splunkforwarder-6.4.4-b53a5c14bb5e-Linux-x86_64.tgz
+      src: "'{{ nfs }}'/Splunk/splunkforwarder-6.4.4-b53a5c14bb5e-Linux-x86_64.tgz"
       dest: /opt/
       remote_src: yes
     tags: step-42
@@ -1038,23 +1047,23 @@
     tags: step-43f
 
   - name: STEP-44A Installing BESClient
-    script: /mnt/post_install/new_build/BES/teminstall
+    script: "'{{ nfs }}'/BES/teminstall"
     tags: step-44
 
   - name: STEP-45 Installing Centrify Packages
-    script: /mnt/post_install/new_build/centrify/CURRENT-BUNDLE/linuxceninstallv2021.sh
+    script: "'{{ nfs }}'/centrify/CURRENT-BUNDLE/linuxceninstallv2021.sh"
     tags: step-45
 
   - name: STEP-46 Installing dnsmasq
-    script: /mnt/post_install/new_build/dnsmasq/install-dnsmasq-rh8.sh
+    script: "'{{ nfs }}'/dnsmasq/install-dnsmasq-rh8.sh"
     tags: step-46
 
   - name: STEP-47 Installing Ilumio
-    script: /mnt/post_install/new_build/install-illumio.sh
+    script: "'{{ nfs }}'/install-illumio.sh"
     tags: step-47
 
   - name: STEP-48 Tuning Setting
-    script: /mnt/post_install/new_build/Redhat_linux_May2021v2.sh
+    script: "'{{ nfs }}'/Redhat_linux_May2021v2.sh"
     tags: step-48
     
   - name: STEP-49 Removing Khaja id
@@ -1062,7 +1071,7 @@
     tags: step-49
   
   - name: STEP-50 Installing Qualys Agent
-    script: /mnt/post_install/new_build/Qualys/install-qualys-agent.sh
+    script: "'{{ nfs }}'/Qualys/install-qualys-agent.sh"
     tags: step-50
 
 # TABLE OF CONTENT FOR TAGS:
@@ -1118,4 +1127,4 @@
 # step-48: Tunning Setting
 # step-49: Removing Khaja Id
 # step-50: Installing Qualys Agent
-
+...
